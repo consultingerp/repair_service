@@ -1,5 +1,5 @@
 
-# ................................. Importing Library And Directives ....................................
+# ...................................... Importing Library And Directives ..............................................
 
 from datetime import datetime, timedelta
 
@@ -8,14 +8,16 @@ from odoo.exceptions import UserError, ValidationError
 import logging
 _logger = logging.getLogger(__name__)
 
-# ................................... End Of Importing Library And Directives ...........................
+# ...................................... End Of Importing Library And Directives .......................................
 
-# .............................. Class For Inheriting Base Modules ......................................
+# .....................,................ Class For Inheriting Sales Modules ............................................
 
 class SaleOrders(models.Model):
     _inherit = "sale.order"
 
     repair_id = fields.Many2one('car.repair', 'Repair ID')
+
+# ........................................ Confirm Button In Sale Order.................................................
 
     def action_confirm(self):
         res = super(SaleOrders, self).action_confirm()
@@ -23,6 +25,8 @@ class SaleOrders(models.Model):
         if car_repair:
             car_repair.update({'state': 'inventory_move'})
         return True
+
+# ...................................... Create Invoice Button In Sale Order............................................
 
     def create_invoices(self):
 
@@ -32,13 +36,15 @@ class SaleOrders(models.Model):
             car_repair.update({'state': 'invoice'})
         return True
 
+# ...................................... End Of Class Inheriting Sales Modules .........................................
+
+# ....................................... Class For Inheriting Partner Modules .........................................
+
 class Partner_inherit(models.Model):
     _inherit='res.partner'
 
     count=fields.Integer('Vehicles',compute='set_count')
     repair_count=fields.Integer('Repair Services',compute='set_repair_count')
-    # driver_parent=fields.Many2one('car.repair.driver',string="driver")
-    # driver=fields.Many2many('car.repair.driver','contact_driver_rel','driver_parent','contact_parent',string='Manage Drivers')
 
     def set_repair_count(self):
         search_res_id = self.env['car.repair'].search([('client','=',self.id)])
@@ -68,6 +74,10 @@ class Partner_inherit(models.Model):
                 'domain': [('driver_id', '=', self.id)]
                 }
 
+# ....................................... End Of Class Inheriting Partner Modules ......................................
+
+# ....................................... Class For Inheriting Fleet Modules ...........................................
+
 class FleetVehicle(models.Model):
     _inherit='fleet.vehicle'
 
@@ -89,7 +99,8 @@ class FleetVehicle(models.Model):
                 }
 
     def set_so_count(self):
-        search_res_id = self.env['sale.order'].search([('partner_id','=',self.driver_id.id),('repair_id.client', '=', self.driver_id.id)])
+        search_res_id = self.env['sale.order'].search([('partner_id','=',self.driver_id.id),
+                                                       ('repair_id.client', '=', self.driver_id.id)])
         self.so_count = len(search_res_id)
 
     def show_so(self):
@@ -101,3 +112,5 @@ class FleetVehicle(models.Model):
                 'res_model': 'sale.order',
                 'domain': [('partner_id', '=', self.driver_id.id),('repair_id.client', '=', self.driver_id.id)]
                 }
+
+# ................................ End Of Class Inheriting Fleet Modules ..............................................
