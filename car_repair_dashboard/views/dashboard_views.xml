@@ -1,19 +1,19 @@
 <odoo>
     <data>
         <record id="car_repair_action_dashboard" model="ir.actions.client">
-            <field name="name">Car Dashboard</field>
+            <field name="name">Car Repair Dashboard</field>
             <field name="tag">car_repair_dashboard</field>
         </record>
 
         <menuitem id="menu_car_repair_dashboard"
-                  name="Car Dashboard"
+                  name="Car Repair Dashboard"
                   action="car_repair_action_dashboard"/>
     </data>
 
     <template id="car_backend_dashboard" name="Car Repair Dashboard assets inherit" inherit_id="web.assets_backend">
         <xpath expr="." position="inside">
-<!--            <link rel="stylesheet" href="/hrms_dashboard/static/src/css/hrms_dashboard.css"/>-->
-            <script type="text/javascript" src="/car_repair_dashboard/static/src/js/hrms_dashboard.js"/>
+<!--            <link rel="stylesheet" href="/car_repair_dashboard/static/src/css/hrms_dashboard.css"/>-->
+            <script type="text/javascript" src="/car_repair_dashboard/static/src/js/car_repair_dashboard.js"/>
             <link rel="stylesheet" href="/car_repair_dashboard/static/src/css/lib/nv.d3.css"/>
             <script type="text/javascript" src="/car_repair_dashboard/static/src/js/lib/d3.min.js"/>
         </xpath>

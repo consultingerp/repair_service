@@ -43,12 +43,32 @@ class SaleOrders(models.Model):
 class Partner_inherit(models.Model):
     _inherit='res.partner'
 
-    count=fields.Integer('Vehicles',compute='set_count')
-    repair_count=fields.Integer('Repair Services',compute='set_repair_count')
+    res_aprt = fields.Many2one('res.partner', string='Driver Name')
 
-    def set_repair_count(self):
-        search_res_id = self.env['car.repair'].search([('client','=',self.id)])
-        self.repair_count = len(search_res_id)
+    drive = fields.Many2many('res.partner','res_partner_rel','count', 'name',string='Drivers Name')
+    # drive = fields.Many2many('res.partner', string='Drivers Name')
+
+    is_vendos = fields.Boolean('Is Vendor')
+
+    count=fields.Integer('Vehicles',compute='set_count')
+    # repair_count=fields.Integer('Repair Services',compute='set_repair_count')
+
+    # @api.model
+    # def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+    #     res = super(Partner_inherit, self).fields_view_get(view_id, view_type, toolbar=toolbar, submenu=False)
+    #     if self.env.context.get('supplier'):
+    #         a = 10
+    #     if self._context.get('supplier'):
+    #         a=10
+    #     if view_type == 'form' and res.get('toolbar', False):
+    #         install_id = self.env.ref('base.action_server_module_immediate_install').id
+    #         action = [rec for rec in res['toolbar']['action'] if rec.get('id', False) != install_id]
+    #         res['toolbar'] = {'action': action}
+    #     return res
+
+    # def set_repair_count(self):
+    #     search_res_id = self.env['car.repair'].search([('client','=',self.id)])
+    #     self.repair_count = len(search_res_id)
 
     def show_service(self):
         return {

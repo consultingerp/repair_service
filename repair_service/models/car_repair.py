@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 from odoo import api, fields, models, SUPERUSER_ID, _
 from odoo.exceptions import UserError, ValidationError
 import logging
+import base64
+from odoo.modules import get_module_resource
 _logger = logging.getLogger(__name__)
 
 # ................................... End Of Importing Library And Directives ..........................................
@@ -26,7 +28,7 @@ class CarRepair(models.Model):
                              'Status', readonly=True, default='diagnosis')
 
     subject = fields.Char(string='Subject')
-    receiving_tech = fields.Many2one('res.users', string='Receiving Technician', default=lambda self: self.env.user)
+    receiving_tech = fields.Many2one('hr.employee', string='Receiving Technician')
     priority = fields.Selection([('0', 'Not urgent'), ('1', 'Normal'), ('2', 'Urgent'), ('3', 'Very Urgent')],
                                 'Priority',
                                 readonly=True, default='1')
@@ -43,8 +45,11 @@ class CarRepair(models.Model):
 
     description = fields.Text('Note')
 
-    image = fields.Many2many('ir.attachment', string="Image")
-    note = fields.Text(string='Descriptions/Remark for Pictures')
+    multi_image = fields.Many2many('repair.image',  string='Image Name')
+
+    # image = fields.Many2many(comodel_name="ir.attachment", relation="m2m_ir_attachment_relation",
+    #                             column1="id", column2="attachment_id", string="Image")
+    note = fields.Text(string='Descriptions/Remark')
     digital_signature = fields.Binary('Signature')
 
     task_line = fields.One2many('repair.task.line', 'task')
@@ -53,10 +58,34 @@ class CarRepair(models.Model):
 
     service_line = fields.One2many('repair.service.line', 'service_line')
 
-    assign_technicians = fields.Many2many('res.users', string='Technicians')
+    assign_technicians = fields.Many2many('hr.employee', string='Technicians')
 
     sale_order_id = fields.Char('Sale Order ID')
 
+    # repair_count = fields.Integer(compute='_compute_repair_count', string='Repair Count')
+
+    # d = fields.Binary(compute='_compute_image',string='Repair Im')
+
+    # def _compute_image(self):
+    #     for employee in self:
+    #         if employee.multi_image.tp:
+    #             employee.d = employee.multi_image.tp
+
+    # def _compute_repair_count(self):
+    #     for employee in self:
+    #         employee.repair_count = len(employee.id)
+    #         a=10
+
+    @api.onchange('client')
+    def _compute_client_info(self):
+        """
+        Trigger the recompute of the taxes if the fiscal position is changed on the SO.
+        """
+        for repair in self:
+            repair.contact_name = self.client.name
+            repair.phone = self.client.phone
+            repair.mobile =self.client.mobile
+            repair.email = self.client.email
 # ........................................... Function for Inventory Move Button .......................................
 
     def action_view_inventory_move(self):
@@ -122,6 +151,8 @@ class RepairTaskLine(models.Model):
     _description = "Repair Task"
     _order = 'id desc'
     _check_company_auto = True
+
+    image = fields.Binary('Image Field')
 
     remark = fields.Char('Remark')
     document = fields.Binary('Document')
@@ -193,3 +224,19 @@ class ServiceName(models.Model):
     name = fields.Char('Service Name')
 
 # ................................End Of Class Repair Service Name .....................................................
+
+class RepairImage(models.Model):
+    _name = "repair.image"
+    _description = "Repair Image"
+    # _order = 'id desc'
+    # _check_company_auto = True
+
+    image = fields.Binary('Select Image')
+    fname = fields.Char(string="File Name")
+    remark = fields.Text('Any Remark')
+
+    # dost = fields.Binary('Download This Image')
+
+    # @api.onchange('image')
+    # def onchnage_image(self):
+    #     self.dost = self.image

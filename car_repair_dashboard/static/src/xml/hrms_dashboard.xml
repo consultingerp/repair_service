@@ -7,7 +7,7 @@
         </div>
     </t>
     <t t-name="LoginEmployeeDetails">
-        <link rel="stylesheet" href="/car_repair_dashboard/static/src/css/hrms_dashboard.css"/>
+        <link rel="stylesheet" href="/car_repair_dashboard/static/src/css/car_reapir_dashboard.css"/>
         <div class="row main-section">
             <div class="col-md-2 col-sm-2 employee-prof">
                 <div class="oh-card">
@@ -91,32 +91,33 @@
                 </div>
                 </div></div>
             </div>
-<!--            <div class="col-md-2 col-sm-6 hr_payslip oh-payslip" style="margin-left: 242px;">-->
-<!--                <div class="oh-card">-->
-<!--                    <div class="oh-card-body">-->
-<!--                        <div class="stat-widget-one">-->
-<!--                            <div class="stat-icon"><i class="fa fa-money"/></div>-->
-<!--                            <div class="stat-content">-->
+            <div class="col-md-2 col-sm-6 hr_payslip oh-payslip" style="margin-left: 242px;">
+                <div class="oh-card">
+                    <div class="oh-card-body">
+                        <div class="stat-widget-one">
+                            <div class="stat-icon"><i class="fa fa-money"/></div>
+                            <div class="stat-content">
 <!--                                <div class="stat-text">Payslips</div>-->
-<!--                                <div class="stat-digit"><t t-esc="widget.login_employee['payslip_count']"/></div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="col-md-2 col-sm-6 hr_timesheets oh-payslip oh-timesheets">-->
-<!--                <div class="oh-card">-->
-<!--                    <div class="oh-card-body">-->
-<!--                        <div class="stat-widget-one">-->
-<!--                            <div class="stat-icon"><i class="fa fa-clock-o"/></div>-->
-<!--                            <div class="stat-content">-->
-<!--                                <div class="stat-text">Timesheets</div>-->
+                                <div class="stat-text">Repair Services</div>
+                                <div class="stat-digit"><t t-esc="widget.login_employee['repair_count']"/></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-6 hr_timesheets oh-payslip oh-timesheets">
+                <div class="oh-card">
+                    <div class="oh-card-body">
+                        <div class="stat-widget-one">
+                            <div class="stat-icon"><i class="fa fa-clock-o"/></div>
+                            <div class="stat-content">
+                                <div class="stat-text">Sale Orders</div>
 <!--                                <div class="stat-digit"><t t-esc="widget.login_employee['emp_timesheets']"/></div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 <!--            <div class="col-md-2 col-sm-6 hr_contract oh-payslip oh-contracts">-->
 <!--                <div class="oh-card">-->
 <!--                    <div class="oh-card-body">-->
@@ -166,7 +167,7 @@
 <!--                        </div>-->
 <!--                    </div>-->
 <!--                </div>-->
-<!--                </div>-->
+<!--            </div>-->
         </div>
     </t>
 <!--    <t t-name="ManagerDashboard">-->

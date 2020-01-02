@@ -18,26 +18,25 @@ var CarRepairDashboard = AbstractAction.extend({
     jsLibs: [
         '/car_repair_dashboard/static/src/js/lib/d3.min.js'
     ],
-//    events: {
+    events: {
 //        'click .hr_leave_request_approve': 'leaves_to_approve',
 //        'click .hr_leave_allocations_approve': 'leave_allocations_to_approve',
-//        'click .hr_timesheets': 'hr_timesheets',
+        'click .hr_timesheets': 'hr_timesheets',
 //        'click .hr_job_application_approve': 'job_applications_to_approve',
-//        'click .hr_payslip':'hr_payslip',
-//        'click .hr_contract':'hr_contract',
+        'click .hr_payslip':'hr_payslip',
+        'click .hr_contract':'hr_contract',
 //        'click .hr_employee':'hr_employee',
 //        'click .leaves_request_month':'leaves_request_month',
 //        'click .leaves_request_today':'leaves_request_today',
 //        "click .o_hr_attendance_sign_in_out_icon": function() {
 //            this.$('.o_hr_attendance_sign_in_out_icon').attr("disabled", "disabled");
 //            this.update_attendance();
-//        },
+        },
 //        'click #broad_factor_pdf': 'generate_broad_factor_report',
-    },
+//    },
 
     init: function(parent, context) {
         this._super(parent, context);
-
         this.date_range = 'week';  // possible values : 'week', 'month', year'
         this.date_from = moment().subtract(1, 'week');
         this.date_to = moment();
@@ -116,11 +115,11 @@ var CarRepairDashboard = AbstractAction.extend({
         var self = this;
         web_client.do_push_state({});
         this.update_cp();
-        this.fetch_data().then(function() {
-            self.$('.o_hr_dashboard').empty();
-            self.render_dashboards();
-//            self.render_graphs();
-        });
+//        this.fetch_data().then(function() {
+//            self.$('.o_hr_dashboard').empty();
+//            self.render_dashboards();
+////            self.render_graphs();
+//        });
     },
 
     update_cp: function() {
@@ -165,38 +164,52 @@ var CarRepairDashboard = AbstractAction.extend({
 //
 //    },
 //
-//    hr_payslip: function(e){
-//        var self = this;
-//        e.stopPropagation();
-//        e.preventDefault();
-//        var options = {
-//            on_reverse_breadcrumb: this.on_reverse_breadcrumb,
-//        };
-//        this.do_action({
-//            name: _t("Employee Payslips"),
-//            type: 'ir.actions.act_window',
-//            res_model: 'hr.payslip',
-//            view_mode: 'tree,form,calendar',
-//            views: [[false, 'list'],[false, 'form']],
+    hr_payslip: function(e){
+        var self = this;
+        e.stopPropagation();
+        e.preventDefault();
+        var options = {
+            on_reverse_breadcrumb: this.on_reverse_breadcrumb,
+        };
+        this.do_action({
+            name: _t("Repair Service"),
+            type: 'ir.actions.act_window',
+            res_model: 'car.repair',
+            view_mode: 'tree,form',
+            views: [[false, 'list'],[false, 'form']],
 //            domain: [['employee_id','=', this.login_employee.id]],
-//            target: 'current'
-//        }, options)
-//        // this.do_action({
-//        //     name: _t("Employee"),
-//        //     type: 'ir.actions.act_window',
-//        //     res_model: 'hr.employee',
-//        //     view_mode: 'form',
-//        //     view_type: 'form',
-//        //     views: [[false, 'form']],
-//        //     res_id: this.login_employee.id,
-//        //     target: 'current'
-//        // }, options)
-//    },
+            target: 'current'
+        }, options)
+        // this.do_action({
+        //     name: _t("Employee"),
+        //     type: 'ir.actions.act_window',
+        //     res_model: 'hr.employee',
+        //     view_mode: 'form',
+        //     view_type: 'form',
+        //     views: [[false, 'form']],
+        //     res_id: this.login_employee.id,
+        //     target: 'current'
+        // }, options)
+    },
 //
-//    hr_contract: function(e){
-//        var self = this;
-//        e.stopPropagation();
-//        e.preventDefault();
+    hr_contract: function(e){
+        var self = this;
+        e.stopPropagation();
+        e.preventDefault();
+        var options = {
+            on_reverse_breadcrumb: self.on_reverse_breadcrumb,
+        };
+        self.do_action({
+                    name: _t("Contracts"),
+                    type: 'ir.actions.act_window',
+                    res_model: 'hr.contract',
+                    view_mode: 'tree,form,calendar',
+                    views: [[false, 'list'],[false, 'form']],
+                    context: {
+                        'search_default_employee_id': self.login_employee.id,
+                    },
+                    target: 'current'
+                }, options)
 //        session.user_has_group('hr.group_hr_user').then(function(has_group){
 //            if(has_group){
 //                var options = {
@@ -215,8 +228,8 @@ var CarRepairDashboard = AbstractAction.extend({
 //                }, options)
 //            }
 //        });
-//
-//    },
+
+    },
 //
 //    leaves_request_month: function(e) {
 //        var self = this;
@@ -294,26 +307,27 @@ var CarRepairDashboard = AbstractAction.extend({
 //        }, options)
 //    },
 //
-//    hr_timesheets: function(e) {
-//         var self = this;
-//        e.stopPropagation();
-//        e.preventDefault();
-//        var options = {
-//            on_reverse_breadcrumb: this.on_reverse_breadcrumb,
-//        };
-//        this.do_action({
-//            name: _t("Timesheets"),
-//            type: 'ir.actions.act_window',
-//            res_model: 'account.analytic.line',
-//            view_mode: 'tree,form',
-//            views: [[false, 'list'], [false, 'form']],
+    hr_timesheets: function(e) {
+         var self = this;
+        e.stopPropagation();
+        e.preventDefault();
+        var options = {
+            on_reverse_breadcrumb: this.on_reverse_breadcrumb,
+        };
+        this.do_action({
+            name: _t("Sale Orders"),
+            type: 'ir.actions.act_window',
+            res_model: 'sale.order',
+            view_mode: 'tree,form',
+            views: [[false, 'list'], [false, 'form']],
 //            context: {
 //                'search_default_month': true,
 //            },
 //            domain: [['employee_id','=', this.login_employee.id]],
-//            target: 'current'
-//        }, options)
-//    },
+            domain: [['repair_id','!=', false]],
+            target: 'current'
+        }, options)
+    },
 //
 //    job_applications_to_approve: function(event){
 //        var self = this;
