@@ -7,3 +7,4 @@ access_part_name,part_name,model_part_name,repair_service.group_user,1,1,1,1
 access_repair_service_line,repair_service_line,model_repair_service_line,repair_service.group_user,1,1,1,1
 access_service_name,service_name,model_service_name,repair_service.group_user,1,1,1,1
 access_repair_image,repair_image,model_repair_image,repair_service.group_user,1,1,1,1
+access_work_order,work_order,model_work_order,repair_service.group_user,1,1,1,1

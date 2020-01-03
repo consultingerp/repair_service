@@ -15,7 +15,7 @@ _logger = logging.getLogger(__name__)
 class SaleOrders(models.Model):
     _inherit = "sale.order"
 
-    repair_id = fields.Many2one('car.repair', 'Repair ID')
+    repair_id = fields.Many2one('car.repair', 'Repair Subject')
 
 # ........................................ Confirm Button In Sale Order.................................................
 
@@ -24,6 +24,10 @@ class SaleOrders(models.Model):
         car_repair = self.env['car.repair'].sudo().search([('sale_order_id', '=', self.name)])
         if car_repair:
             car_repair.update({'state': 'inventory_move'})
+        stock_obj = self.env['stock.picking'].sudo().search([('origin', '=', self.name)])
+        if stock_obj:
+            for stock in stock_obj:
+                stock.update({'car_obj': self.repair_id.id})
         return True
 
 # ...................................... Create Invoice Button In Sale Order............................................
@@ -134,3 +138,49 @@ class FleetVehicle(models.Model):
                 }
 
 # ................................ End Of Class Inheriting Fleet Modules ..............................................
+
+# ....................................... Class For Inheriting Stock Picking Modules ...................................
+
+class StockPickingRepair(models.Model):
+    _inherit='stock.picking'
+
+    car_obj = fields.Many2one('car.repair', 'Repair ID')
+
+    # count = fields.Integer('Services', compute='set_count')
+    # so_count = fields.Integer('Services', compute='set_so_count')
+    #
+    # def set_count(self):
+    #     search_res_id = self.env['car.repair'].search([('client','=',self.driver_id.id)])
+    #     self.count = len(search_res_id)
+
+    def button_validate(self):
+        res = super(StockPickingRepair, self).button_validate()
+        car_repair = self.env['car.repair'].sudo().search([('id', '=', self.car_obj.id)])
+        if car_repair:
+            car_repair.update({'state': 'work_order'})
+            # work_obj = self.env['work.order'].sudo().search([('id', '=', car_repair.id)])
+            # if not work_obj:
+            for repair_task in car_repair.task_line:
+                work_obj = self.env['work.order'].sudo().create({
+                                                                    'work_order' : repair_task.repair_id.id,
+                                                                    'receiving_tech' : repair_task.repair_id.receiving_tech.id,
+                                                                    'task_name' : repair_task.task.name
+                                                                })
+        # return True
+
+    # def set_so_count(self):
+    #     search_res_id = self.env['sale.order'].search([('partner_id','=',self.driver_id.id),
+    #                                                    ('repair_id.client', '=', self.driver_id.id)])
+    #     self.so_count = len(search_res_id)
+
+    def show_so(self):
+        return {
+                'name': ('Repair Services'),
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'res_model': 'sale.order',
+                'domain': [('partner_id', '=', self.driver_id.id),('repair_id.client', '=', self.driver_id.id)]
+                }
+
+# ................................ End Of Class Inheriting Stock Picking Modules .......................................

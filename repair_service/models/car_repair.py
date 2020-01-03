@@ -52,7 +52,7 @@ class CarRepair(models.Model):
     note = fields.Text(string='Descriptions/Remark')
     digital_signature = fields.Binary('Signature')
 
-    task_line = fields.One2many('repair.task.line', 'task')
+    task_line = fields.One2many('repair.task.line', 'repair_id')
 
     part_line = fields.One2many('repair.part.line', 'part_line')
 
@@ -61,6 +61,8 @@ class CarRepair(models.Model):
     assign_technicians = fields.Many2many('hr.employee', string='Technicians')
 
     sale_order_id = fields.Char('Sale Order ID')
+
+    work_order_id = fields.Char('Work Order Id')
 
     # repair_count = fields.Integer(compute='_compute_repair_count', string='Repair Count')
 
@@ -106,6 +108,26 @@ class CarRepair(models.Model):
 
 # ............................................. End of Function for Inventory Move Button ..............................
 
+# ........................................... Function for Work Order Button ...........................................
+
+    def action_view_work_order(self):
+        view = self.env.ref('repair_service.view_work_order_form')
+        trees = self.env.ref('repair_service.work_order_tree')
+        res = {
+            'name': 'Work Order',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'work.order',
+            'views': [(trees.id, 'tree'), (view.id, 'form')],
+            'view_id': view.id,
+            'target': 'current',
+            'domain': [('work_order', '=', self.id)]
+        }
+        return res
+
+# ............................................. End of Function for Work Order Button ..............................
+
 # .............................................. Function for Confirm Diagnosis And Send Quotation .....................
     def send_quotation(self):
         sale_order = self.env['sale.order'].sudo().create({
@@ -139,6 +161,10 @@ class CarRepair(models.Model):
         self.update({'state': 'send_quotation', 'sale_order_id':sale_order.name})
         return True
 
+    def done_inspection(self):
+        self.update({'state': 'invoice'})
+        return True
+
 # ............................... End of Function Confirm Diagnosis And Send Quotation .................................
 
 # ................................ End Of Class Car Repair .............................................................
@@ -156,6 +182,7 @@ class RepairTaskLine(models.Model):
 
     remark = fields.Char('Remark')
     document = fields.Binary('Document')
+    repair_id = fields.Many2one('car.repair', 'Repair ID')
     task = fields.Many2one('task.name', 'Task')
 
 # ................................End of  Class Repair Task List .......................................................
@@ -225,6 +252,8 @@ class ServiceName(models.Model):
 
 # ................................End Of Class Repair Service Name .....................................................
 
+# ................................ Class For Adding Images In Repair Action ............................................
+
 class RepairImage(models.Model):
     _name = "repair.image"
     _description = "Repair Image"
@@ -235,8 +264,68 @@ class RepairImage(models.Model):
     fname = fields.Char(string="File Name")
     remark = fields.Text('Any Remark')
 
-    # dost = fields.Binary('Download This Image')
+    dost = fields.Binary('Download This Image')
 
-    # @api.onchange('image')
-    # def onchnage_image(self):
-    #     self.dost = self.image
+    @api.onchange('image')
+    def onchnage_image(self):
+        self.dost = self.image
+
+# ............................. End Of Class For Adding Images In Repair Action.........................................
+
+
+# ................................ Class For Work Order ............................................
+
+class WorkOrder(models.Model):
+    _name = "work.order"
+    _description = "Work Order"
+    _order = 'id desc'
+    # _check_company_auto = True
+
+    state = fields.Selection([('start', 'Start'), ('in_progress', 'In Progress'),
+                              ('completed', 'Completed'), ('pause', 'Pause'), ('cancel', 'Cancel Task')],
+                             'Status', readonly=True, default='start')
+
+    work_order = fields.Many2one('car.repair', string='Repair Order')
+
+    # subject = fields.Char(string='Subject')
+    receiving_tech = fields.Many2one('hr.employee', string='Receiving Technician')
+
+
+    receipt_date = fields.Date(string='Date Of Receipt', default=lambda self: fields.Datetime.now())
+
+    start_time = fields.Datetime(string='Start Time')
+    end_time = fields.Datetime(string='End Time')
+    duration = fields.Char(string='Duration')
+    hour_worked = fields.Char(string='Hour Worked')
+
+    task_name = fields.Char('Task')
+
+
+    def start_task(self):
+        current_time = datetime.today()
+        self.update({'state': 'in_progress','start_time': current_time})
+
+    def complete_task(self):
+
+        complete_time = datetime.today()
+
+        dur = (datetime.today() - self.start_time)
+        duration = dur.seconds//3600
+
+        minutes = dur.seconds / 60
+        min = round(minutes,2)
+
+        self.update({'state': 'completed','end_time': complete_time,'duration': dur,'hour_worked': duration})
+
+        work_count = self.env['work.order'].search_count([('work_order', '=', self.work_order.id)])
+
+        work_obj = self.env['work.order'].search([('work_order', '=', self.work_order.id)])
+        count = 0
+        for x in work_obj:
+            if x.state == 'completed':
+                count += 1
+        if work_count == count:
+            repair_obj = self.env['car.repair'].search([('id', '=', self.work_order.id)])
+            repair_obj.update({'state': 'inspections'})
+
+# ............................. End Of Class For Work Order.............................................................
