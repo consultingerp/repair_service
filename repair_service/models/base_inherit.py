@@ -17,7 +17,7 @@ class SaleOrders(models.Model):
 
     repair_id = fields.Many2one('car.repair', 'Repair Subject')
 
-# ........................................ Confirm Button In Sale Order.................................................
+    # ........................................ Confirm Button In Sale Order.................................................
 
     def action_confirm(self):
         res = super(SaleOrders, self).action_confirm()
@@ -30,7 +30,7 @@ class SaleOrders(models.Model):
                 stock.update({'car_obj': self.repair_id.id})
         return True
 
-# ...................................... Create Invoice Button In Sale Order............................................
+    # ...................................... Create Invoice Button In Sale Order............................................
 
     def create_invoices(self):
 
@@ -49,13 +49,48 @@ class Partner_inherit(models.Model):
 
     res_aprt = fields.Many2one('res.partner', string='Driver Name')
 
-    drive = fields.Many2many('res.partner','res_partner_rel','count', 'name',string='Drivers Name')
+    drive = fields.Many2many('res.partner','res_partner_rel','count', 'name',string=' ')
+    # drive = fields.One2many('res.partner','res_aprt',string=' ')
     # drive = fields.Many2many('res.partner', string='Drivers Name')
+
+    driver_bool = fields.Boolean('Driver')
 
     is_vendos = fields.Boolean('Is Vendor')
 
     count=fields.Integer('Vehicles',compute='set_count')
     # repair_count=fields.Integer('Repair Services',compute='set_repair_count')
+
+    @api.onchange('driver_bool')
+    def _onchange_driver(self):
+        temp = []
+        if self.driver_bool:
+            # name = self.name
+            # function = self.function
+            # email = self.email
+            # phone = self.phone
+            # driver_ids = self.env['res.partner'].create({
+            #     'name': name,
+            #     'function': function,
+            #     'email': email,
+            #     'phone': phone,
+            # })
+            # res = self.env['res.partner'].sudo().search([('email','=',self.email), ('name', '=', self.name)])
+            # for x in res:
+            #     temp.append(x.id)
+            #     self.write({'drive': [(1, x.id)]})
+            # partner = self.env['res.partner']
+            res = self.env['res.partner'].sudo().search([('email', '=', self.email), ('name', '=', self.name)])
+            self.write({'drive': [(4, s.id) for s in res]})
+
+    # def write(self, vals):
+    #     res_obj = self.env['res.partner']
+    #     project_ids = []
+    #     res = super(Partner_inherit, self).write(vals)
+    #     for x in self.child_ids:
+    #         if x.driver_bool:
+    #             project_ids.append(x.id)
+    #     self.write({'drive': [(6, 0, project_ids)]})
+    #     return True
 
     # @api.model
     # def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
@@ -76,13 +111,13 @@ class Partner_inherit(models.Model):
 
     def show_service(self):
         return {
-                'name': ('Repair Services'),
-                'type': 'ir.actions.act_window',
-                'view_type': 'form',
-                'view_mode': 'tree,form',
-                'res_model': 'car.repair',
-                'domain': [('client', '=', self.id)]
-                }
+            'name': ('Repair Services'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'car.repair',
+            'domain': [('client', '=', self.id)]
+        }
 
     def set_count(self):
         search_res_id = self.env['fleet.vehicle'].search([('driver_id','=',self.id)])
@@ -90,13 +125,13 @@ class Partner_inherit(models.Model):
 
     def show_vehicles(self):
         return {
-                'name': ('Vehicles'),
-                'type': 'ir.actions.act_window',
-                'view_type': 'form',
-                'view_mode': 'tree,form',
-                'res_model': 'fleet.vehicle',
-                'domain': [('driver_id', '=', self.id)]
-                }
+            'name': ('Vehicles'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'fleet.vehicle',
+            'domain': [('driver_id', '=', self.id)]
+        }
 
 # ....................................... End Of Class Inheriting Partner Modules ......................................
 
@@ -107,20 +142,32 @@ class FleetVehicle(models.Model):
 
     count = fields.Integer('Services', compute='set_count')
     so_count = fields.Integer('Services', compute='set_so_count')
+    res_company = fields.Many2one('res.partner',string="Company")
 
     def set_count(self):
         search_res_id = self.env['car.repair'].search([('client','=',self.driver_id.id)])
         self.count = len(search_res_id)
 
     def show_service(self):
+        context = dict(self.env.context)
+        context.update({
+            'default_client': self.res_company.id,
+            'default_contact_name': self.res_company.name,
+            'default_email': self.res_company.email,
+            'default_phone': self.res_company.phone,
+            'default_mobile': self.res_company.mobile
+        })
         return {
-                'name': ('Repair Services'),
-                'type': 'ir.actions.act_window',
-                'view_type': 'form',
-                'view_mode': 'tree,form',
-                'res_model': 'car.repair',
-                'domain': [('client', '=', self.driver_id.id)]
-                }
+            'name': ('Repair Services'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'car.repair',
+            'domain': [('client', '=', self.driver_id.id)],
+            # 'context' : dict(self._context, default_client=self.res_company.id, default_contact_name=self.res_company.name, default_email=self.res_company.email, default_phone=self.res_company.phone, default_mobile=self.res_company.mobile)
+            "context" : context
+
+        }
 
     def set_so_count(self):
         search_res_id = self.env['sale.order'].search([('partner_id','=',self.driver_id.id),
@@ -129,13 +176,14 @@ class FleetVehicle(models.Model):
 
     def show_so(self):
         return {
-                'name': ('Repair Services'),
-                'type': 'ir.actions.act_window',
-                'view_type': 'form',
-                'view_mode': 'tree,form',
-                'res_model': 'sale.order',
-                'domain': [('partner_id', '=', self.driver_id.id),('repair_id.client', '=', self.driver_id.id)]
-                }
+            'name': ('Sale Orders'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'sale.order',
+            'domain': [('partner_id', '=', self.driver_id.id),('repair_id.client', '=', self.driver_id.id)],
+            "context": dict(self._context, create=False),
+        }
 
 # ................................ End Of Class Inheriting Fleet Modules ..............................................
 
@@ -162,10 +210,10 @@ class StockPickingRepair(models.Model):
             # if not work_obj:
             for repair_task in car_repair.task_line:
                 work_obj = self.env['work.order'].sudo().create({
-                                                                    'work_order' : repair_task.repair_id.id,
-                                                                    'receiving_tech' : repair_task.repair_id.receiving_tech.id,
-                                                                    'task_name' : repair_task.task.name
-                                                                })
+                    'work_order' : repair_task.repair_id.id,
+                    'receiving_tech' : repair_task.repair_id.receiving_tech.id,
+                    'task_name' : repair_task.task.name
+                })
         # return True
 
     # def set_so_count(self):
@@ -175,12 +223,12 @@ class StockPickingRepair(models.Model):
 
     def show_so(self):
         return {
-                'name': ('Repair Services'),
-                'type': 'ir.actions.act_window',
-                'view_type': 'form',
-                'view_mode': 'tree,form',
-                'res_model': 'sale.order',
-                'domain': [('partner_id', '=', self.driver_id.id),('repair_id.client', '=', self.driver_id.id)]
-                }
+            'name': ('Repair Services'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'sale.order',
+            'domain': [('partner_id', '=', self.driver_id.id),('repair_id.client', '=', self.driver_id.id)]
+        }
 
 # ................................ End Of Class Inheriting Stock Picking Modules .......................................

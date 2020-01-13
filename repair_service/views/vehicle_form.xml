@@ -32,15 +32,20 @@
             <xpath expr="//field[@name='type']" position="after">
                 <field name="supplier_rank" invisible="1"/>
                 <field name="customer_rank" invisible="1"/>
+<!--                <field name="res_aprt" />-->
+            </xpath>
+
+            <xpath expr="//notebook/page/field/form/sheet/group/group/field[@name='mobile']" position="after">
+                <field name="driver_bool" attrs="{'invisible': [('type','!=', 'contact')]}" />
             </xpath>
 
             <xpath expr="//notebook/page[@name='internal_notes']" position="after">
                 <!--                <page name="driver" string="Driver" attrs="{'invisible': [('company_type', '=', 'person')]}">-->
                 <page name="driver" string="Driver" attrs="{'invisible': ['|', ('company_type', '=', 'person'), ('supplier_rank', '=',1)]}">
-                    <group name="container_row_2">
-                        <group string="Drive" name="drive">
-                            <field name="drive" domain="[('parent_id', '!=', False)]" mode="kanban" widget="many2many" context="{'default_parent_id': active_id, 'default_street': street, 'default_street2': street2, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_lang': lang, 'default_user_id': user_id, 'default_type': 'other'}">
-                                <kanban quick_create="false" create="true">
+<!--                    <group name="container_row_2">-->
+<!--                        <group string="Driver" name="drive">-->
+                            <field name="drive" mode="kanban" context="{'default_parent_id': active_id, 'default_street': street, 'default_street2': street2, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_lang': lang, 'default_user_id': user_id, 'default_type': 'other'}">
+                                <kanban>
                                     <field name="id"/>
                                     <field name="color"/>
                                     <field name="name"/>
@@ -98,8 +103,8 @@
                                     </templates>
                                 </kanban>
                             </field>
-                        </group>
-                    </group>
+<!--                        </group>-->
+<!--                    </group>-->
                 </page>
             </xpath>
 
@@ -202,6 +207,7 @@
                         <group string="Driver">
                             <field name="active" invisible="1"/>
                             <field name="driver_id" domain="['|', ('company_id', '=', False ), ('company_id', '=', company_id)]"/>
+                            <field name="res_company" />
                             <!--                            <label for="future_driver_id"/>-->
                             <!--                            <div class="o_row">-->
                             <!--                                <field name="future_driver_id"/>-->

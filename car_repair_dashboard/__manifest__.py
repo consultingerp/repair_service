@@ -35,9 +35,9 @@
         'python': ['pandas'],
     },
     'data': [
-        'views/dashboard_views.xml'
-        # 'security/ir.model.access.csv',
-        # 'report/broadfactor.xml',
+        'security/ir.model.access.csv',
+        'views/dashboard_views.xml',
+        'report/broadfactor.xml',
     ],
     'qweb': ["static/src/xml/hrms_dashboard.xml"],
     # 'images': ["static/description/banner.gif"],

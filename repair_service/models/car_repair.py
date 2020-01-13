@@ -50,6 +50,8 @@ class CarRepair(models.Model):
     # image = fields.Many2many(comodel_name="ir.attachment", relation="m2m_ir_attachment_relation",
     #                             column1="id", column2="attachment_id", string="Image")
     note = fields.Text(string='Descriptions/Remark')
+    multi_select = fields.Html('Multi Select Faults')
+
     digital_signature = fields.Binary('Signature')
 
     task_line = fields.One2many('repair.task.line', 'repair_id')
