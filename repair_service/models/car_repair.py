@@ -22,13 +22,17 @@ class CarRepair(models.Model):
     _order = 'id desc'
     _check_company_auto = True
 
+    def _default_employee(self):
+        return self.env.context.get('default_employee_id') or self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
+
     state = fields.Selection([('diagnosis', 'Car Diagnosis'), ('send_quotation', 'Send Quotation'),
                               ('inventory_move', 'Inventory Move'), ('work_order', 'Work Order'),
                               ('inspections','Inspections'), ('invoice', 'Invoice')],
                              'Status', readonly=True, default='diagnosis')
 
     subject = fields.Char(string='Subject')
-    receiving_tech = fields.Many2one('hr.employee', string='Receiving Technician')
+    # receiving_tech = fields.Many2one('hr.employee', string='Receiving Technician',  default=lambda self: self.env.user)
+    receiving_tech = fields.Many2one('hr.employee', string='Receiving Technician',  default=_default_employee)
     priority = fields.Selection([('0', 'Not urgent'), ('1', 'Normal'), ('2', 'Urgent'), ('3', 'Very Urgent')],
                                 'Priority',
                                 readonly=True, default='1')
@@ -45,7 +49,7 @@ class CarRepair(models.Model):
 
     description = fields.Text('Note')
 
-    multi_image = fields.Many2many('repair.image',  string='Image Name')
+    multi_image = fields.Many2many('repair.image',  string='Images')
 
     # image = fields.Many2many(comodel_name="ir.attachment", relation="m2m_ir_attachment_relation",
     #                             column1="id", column2="attachment_id", string="Image")
@@ -65,6 +69,7 @@ class CarRepair(models.Model):
     sale_order_id = fields.Char('Sale Order ID')
 
     work_order_id = fields.Char('Work Order Id')
+
 
     # repair_count = fields.Integer(compute='_compute_repair_count', string='Repair Count')
 
@@ -161,6 +166,68 @@ class CarRepair(models.Model):
             sales_order_line.append(orders_line.id)
         sale_order.write({'order_line': [(6, 0, sales_order_line)]})
         self.update({'state': 'send_quotation', 'sale_order_id':sale_order.name})
+
+        return True
+
+    def action_view_partner_invoices(self):
+        message = self.env['mail.message'].create({
+            'subject': 'S',
+            'body': 'B',
+            # 'subtype_id': self.ref('mail.mt_comment'),
+            'notification_ids': [(0, 0, {
+                'res_partner_id': self.assign_technicians.id,
+                # 'mail_id': mail.id,
+                'notification_type': 'email',
+                'is_read': True,
+                'notification_status': 'ready',
+            })],
+        })
+        notif_create_values = [{
+            'mail_message_id': message.id,
+            'res_partner_id': self.assign_technicians.id,
+            'notification_type': 'inbox',
+            'notification_status': 'sent',
+        }]
+        self.env['mail.notification'].sudo().create(notif_create_values).send()
+
+        # recipient_links = [(4, partner_id) for partner_id in self.assign_technicians]
+        # ref = model_data_obj.get_object_reference('mail', 'mt_comment')
+        # message_data = {
+        #     'type': 'notification',
+        #     'subject': "Product request",
+        #     'body': 'email',
+        #     'partner_ids': recipient_links,
+            # 'subtype_id': res,
+        # }
+        # msg_obj = self.pool.get('mail.message')
+        # msg_obj.create( message_data)
+        # body = "Hello"
+        # self.env['mail.message'].create({
+        #     'body_html': body,
+        #     'subject': 'Re: %s' % msg_dict.get('subject', ''),
+        #     'email_to': msg_dict.get('email_from', False),
+        #     'auto_delete': True,
+        #     'references': msg_dict.get('message_id'),
+        # }).send()
+        # for tech in self.assign_technicians:
+            # partner = tech
+            # odoobot_id = self.env['ir.model.data'].xmlid_to_res_id("base.partner_root")
+            # channel = self.env['mail.channel'].with_context({
+            #     'mail_create_nolog': True,
+            #     'mail_create_nosubscribe': True,
+            #     'mail_channel_noautofollow': True,
+            #     }).create({
+            #         'channel_partner_ids': [(4, partner.id)],
+            #         'public': 'private',
+            #         'channel_type': 'chat',
+            #         'email_send': False,
+            #         'name': 'Assigned For Repair Service'
+            #     })
+            # message = _(
+            #     "Hello,<br/>You have been assigned for Car repair service. Please check.<br/><b>If you have any questions, Please contact to admin :)</b>")
+            # channel.sudo().message_post(body=message,  message_type="comment",
+            #                             subtype="mail.mt_comment")
+            # self.env.user.odoobot_state = 'onboarding_emoji'
         return True
 
     def done_inspection(self):
