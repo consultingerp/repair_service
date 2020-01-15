@@ -47,7 +47,7 @@ class SaleOrders(models.Model):
 class Partner_inherit(models.Model):
     _inherit='res.partner'
 
-    res_aprt = fields.Many2one('res.partner', string='Driver Name')
+    # res_aprt = fields.Many2one('res.partner', string='Driver Name')
 
     drive = fields.Many2many('res.partner','res_partner_rel','count', 'name',string=' ')
     # drive = fields.One2many('res.partner','res_aprt',string=' ')
