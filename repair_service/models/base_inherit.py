@@ -60,37 +60,15 @@ class Partner_inherit(models.Model):
     count=fields.Integer('Vehicles',compute='set_count')
     # repair_count=fields.Integer('Repair Services',compute='set_repair_count')
 
-    @api.onchange('driver_bool')
-    def _onchange_driver(self):
-        temp = []
-        if self.driver_bool:
-            # name = self.name
-            # function = self.function
-            # email = self.email
-            # phone = self.phone
-            # driver_ids = self.env['res.partner'].create({
-            #     'name': name,
-            #     'function': function,
-            #     'email': email,
-            #     'phone': phone,
-            # })
-            # res = self.env['res.partner'].sudo().search([('email','=',self.email), ('name', '=', self.name)])
-            # for x in res:
-            #     temp.append(x.id)
-            #     self.write({'drive': [(1, x.id)]})
-            # partner = self.env['res.partner']
-            res = self.env['res.partner'].sudo().search([('email', '=', self.email), ('name', '=', self.name)])
-            self.write({'drive': [(4, s.id) for s in res]})
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(Partner_inherit, self).create(vals_list)
+        if res.driver_bool == True:
+            partner = self.env['res.partner'].search([('id', '=', res.parent_id.id)])
+            if partner:
+                partner.write({'drive': [(4, res.id)]})
+        return True
 
-    # def write(self, vals):
-    #     res_obj = self.env['res.partner']
-    #     project_ids = []
-    #     res = super(Partner_inherit, self).write(vals)
-    #     for x in self.child_ids:
-    #         if x.driver_bool:
-    #             project_ids.append(x.id)
-    #     self.write({'drive': [(6, 0, project_ids)]})
-    #     return True
 
     # @api.model
     # def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):

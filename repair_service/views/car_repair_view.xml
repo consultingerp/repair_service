@@ -57,7 +57,7 @@
                     <page string="General" name="general">
                         <group>
                             <group string="Client Info" name="client_info">
-                                <button type="object" icon="fa-pencil-square-o" name="action_view_partner_invoices" string="Test"/>
+<!--                                <button type="object" icon="fa-pencil-square-o" name="action_view_partner_invoices" string="Test"/>-->
                                 <field name="client" domain="[('is_company', '=', True)]" required="1"/>
                                 <field name="contact_name" />
                             </group>

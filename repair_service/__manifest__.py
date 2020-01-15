@@ -9,7 +9,7 @@
     'description': """
 This module will create Car Diagnosis and Assign Technicians for it.
     """,
-    'depends': ['base','stock','sale','product'],
+    'depends': ['base','stock','sale','product','mail'],
     'data': [
         'security/repair_security.xml',
         'security/ir.model.access.csv',

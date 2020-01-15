@@ -7,7 +7,11 @@ from odoo import api, fields, models, SUPERUSER_ID, _
 from odoo.exceptions import UserError, ValidationError
 import logging
 import base64
+
+from odoo.fields import Datetime
 from odoo.modules import get_module_resource
+from odoo.tools import formataddr
+
 _logger = logging.getLogger(__name__)
 
 # ................................... End Of Importing Library And Directives ..........................................
@@ -17,6 +21,7 @@ _logger = logging.getLogger(__name__)
 
 class CarRepair(models.Model):
     _name = "car.repair"
+    _inherit = ['mail.thread']
     _description = "Car Repair"
     _rec_name = 'subject'
     _order = 'id desc'
@@ -167,68 +172,75 @@ class CarRepair(models.Model):
         sale_order.write({'order_line': [(6, 0, sales_order_line)]})
         self.update({'state': 'send_quotation', 'sale_order_id':sale_order.name})
 
+        for i in self.assign_technicians:
+            partner = self.env['hr.employee'].search([('id','=',i.id)])
+            if partner:
+                body = "Hello, You have been assigned to Repair Service. Please check"
+                pa = self.env['res.partner'].search([('name','=',i.name)]).id
+                pas = self.env['res.partner'].search([('name','=',self.receiving_tech.name)]).id
+                ids = []
+                ids.append(pas)
+                ids.append(pa)
+                channel_search = self.env['mail.channel'].search(['&',('channel_last_seen_partner_ids.partner_id','=',pa),('channel_last_seen_partner_ids.partner_id','=',pas)])
+                li = []
+                for x in channel_search:
+                    li.append(x.id)
+                if not channel_search:
+                    channel_search = self.env['mail.channel'].create({
+                        'name': '',
+                        'channel_last_seen_partner_ids': [(0, 0, {'partner_id': ids})]
+                    })
+                message = self.env['mail.message'].create({
+                    'date' : Datetime.now(),
+                    'model': 'mail.channel',
+                    'res_id': self.id,
+                    'message_type': 'notification',
+                    'body': body,
+                    'moderation_status': 'accepted',
+                    'record_name' : self.env['res.partner'].search([('name','=',i.name)]).name,
+                    'author_id': pas,
+                    'email_from': formataddr((self.receiving_tech.name, self.receiving_tech.private_email)),
+                    'subtype_id': self.env['mail.message.subtype'].search([('name', '=', 'Discussions')]).id,
+                    # 'partner_ids': [(6, 0, [self.env['res.partner'].search([('name','=',i.name)]).id])],
+                    'channel_ids': [(6, 0, li)],
+                })
+
         return True
 
     def action_view_partner_invoices(self):
-        message = self.env['mail.message'].create({
-            'subject': 'S',
-            'body': 'B',
-            # 'subtype_id': self.ref('mail.mt_comment'),
-            'notification_ids': [(0, 0, {
-                'res_partner_id': self.assign_technicians.id,
-                # 'mail_id': mail.id,
-                'notification_type': 'email',
-                'is_read': True,
-                'notification_status': 'ready',
-            })],
-        })
-        notif_create_values = [{
-            'mail_message_id': message.id,
-            'res_partner_id': self.assign_technicians.id,
-            'notification_type': 'inbox',
-            'notification_status': 'sent',
-        }]
-        self.env['mail.notification'].sudo().create(notif_create_values).send()
-
-        # recipient_links = [(4, partner_id) for partner_id in self.assign_technicians]
-        # ref = model_data_obj.get_object_reference('mail', 'mt_comment')
-        # message_data = {
-        #     'type': 'notification',
-        #     'subject': "Product request",
-        #     'body': 'email',
-        #     'partner_ids': recipient_links,
-            # 'subtype_id': res,
-        # }
-        # msg_obj = self.pool.get('mail.message')
-        # msg_obj.create( message_data)
-        # body = "Hello"
-        # self.env['mail.message'].create({
-        #     'body_html': body,
-        #     'subject': 'Re: %s' % msg_dict.get('subject', ''),
-        #     'email_to': msg_dict.get('email_from', False),
-        #     'auto_delete': True,
-        #     'references': msg_dict.get('message_id'),
-        # }).send()
-        # for tech in self.assign_technicians:
-            # partner = tech
-            # odoobot_id = self.env['ir.model.data'].xmlid_to_res_id("base.partner_root")
-            # channel = self.env['mail.channel'].with_context({
-            #     'mail_create_nolog': True,
-            #     'mail_create_nosubscribe': True,
-            #     'mail_channel_noautofollow': True,
-            #     }).create({
-            #         'channel_partner_ids': [(4, partner.id)],
-            #         'public': 'private',
-            #         'channel_type': 'chat',
-            #         'email_send': False,
-            #         'name': 'Assigned For Repair Service'
-            #     })
-            # message = _(
-            #     "Hello,<br/>You have been assigned for Car repair service. Please check.<br/><b>If you have any questions, Please contact to admin :)</b>")
-            # channel.sudo().message_post(body=message,  message_type="comment",
-            #                             subtype="mail.mt_comment")
-            # self.env.user.odoobot_state = 'onboarding_emoji'
-        return True
+        for i in self.assign_technicians:
+            partner = self.env['hr.employee'].search([('id','=',i.id)])
+            if partner:
+                body = "Hello, You have been assigned to Repair Service. Please check"
+                pa = self.env['res.partner'].search([('name','=',i.name)]).id
+                pas = self.env['res.partner'].search([('name','=',self.receiving_tech.name)]).id
+                ids = []
+                ids.append(pas)
+                ids.append(pa)
+                channel_search = self.env['mail.channel'].search(['&',('channel_last_seen_partner_ids.partner_id','=',pa),('channel_last_seen_partner_ids.partner_id','=',pas)])
+                li = []
+                for x in channel_search:
+                    li.append(x.id)
+                if not channel_search:
+                    channel_search = self.env['mail.channel'].create({
+                        'name': '',
+                        'channel_last_seen_partner_ids': [(0, 0, {'partner_id': ids})]
+                    })
+                message = self.env['mail.message'].create({
+                    'date' : Datetime.now(),
+                    'model': 'mail.channel',
+                    'res_id': self.id,
+                    'message_type': 'notification',
+                    'body': body,
+                    'moderation_status': 'accepted',
+                    'record_name' : self.env['res.partner'].search([('name','=',i.name)]).name,
+                    'author_id': pas,
+                    'email_from': formataddr((self.receiving_tech.name, self.receiving_tech.private_email)),
+                    'subtype_id': self.env['mail.message.subtype'].search([('name', '=', 'Discussions')]).id,
+                    # 'partner_ids': [(6, 0, [self.env['res.partner'].search([('name','=',i.name)]).id])],
+                    'channel_ids': [(6, 0, li)],
+                })
+                return True
 
     def done_inspection(self):
         self.update({'state': 'invoice'})
