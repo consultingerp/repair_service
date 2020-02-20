@@ -46,7 +46,7 @@ class CarRepair(models.Model):
     rma_number = fields.Integer(string='RMA Number')
 
     client = fields.Many2one('res.partner', string='Client')
-    contact_name = fields.Char(string='Contact name')
+    contacts_name = fields.Many2one('res.partner', string='Contact Name')
     email = fields.Char(string='Email')
     phone = fields.Char(string='Phone')
     mobile = fields.Char(string='Mobile')
@@ -90,16 +90,15 @@ class CarRepair(models.Model):
     #         employee.repair_count = len(employee.id)
     #         a=10
 
-    @api.onchange('client')
+    @api.onchange('contacts_name')
     def _compute_client_info(self):
         """
-        Trigger the recompute of the taxes if the fiscal position is changed on the SO.
+        Trigger the recompute of the client information.
         """
         for repair in self:
-            repair.contact_name = self.client.name
-            repair.phone = self.client.phone
-            repair.mobile =self.client.mobile
-            repair.email = self.client.email
+            repair.phone = self.contacts_name.phone
+            repair.mobile =self.contacts_name.mobile
+            repair.email = self.contacts_name.email
 # ........................................... Function for Inventory Move Button .......................................
 
     def action_view_inventory_move(self):
@@ -259,12 +258,22 @@ class RepairTaskLine(models.Model):
     _order = 'id desc'
     _check_company_auto = True
 
-    image = fields.Binary('Image Field')
+    # image = fields.Binary('Image Field')
 
     remark = fields.Char('Remark')
     document = fields.Binary('Document')
     repair_id = fields.Many2one('car.repair', 'Repair ID')
     task = fields.Many2one('task.name', 'Task')
+
+    def download_files(self):
+        a=10
+        doc=self.document
+        return self.document
+        # return {
+        #     'type': 'ir.actions.act_url',
+        #     'target': 'self',
+        #     'url': self.document,
+        # }
 
 # ................................End of  Class Repair Task List .......................................................
 

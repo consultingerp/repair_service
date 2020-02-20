@@ -41,7 +41,8 @@
 
             <xpath expr="//notebook/page[@name='internal_notes']" position="after">
                 <!--                <page name="driver" string="Driver" attrs="{'invisible': [('company_type', '=', 'person')]}">-->
-                <page name="driver" string="Driver" attrs="{'invisible': ['|', ('company_type', '=', 'person'), ('supplier_rank', '=',1)]}">
+                <page name="driver" string="Driver" attrs="{'invisible': [('company_type', '=', 'person')]}">
+<!--                <page name="driver" string="Driver" attrs="{'invisible': ['|', ('company_type', '=', 'person'), ('supplier_rank', '=',1)]}">-->
 <!--                    <group name="container_row_2">-->
 <!--                        <group string="Driver" name="drive">-->
                             <field name="drive" mode="kanban" context="{'default_parent_id': active_id, 'default_street': street, 'default_street2': street2, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_lang': lang, 'default_user_id': user_id, 'default_type': 'other'}">

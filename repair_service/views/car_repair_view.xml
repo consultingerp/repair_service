@@ -59,7 +59,7 @@
                             <group string="Client Info" name="client_info">
 <!--                                <button type="object" icon="fa-pencil-square-o" name="action_view_partner_invoices" string="Test"/>-->
                                 <field name="client" domain="[('is_company', '=', True)]" required="1"/>
-                                <field name="contact_name" />
+                                <field name="contacts_name" attrs="{'invisible': [('client', '=', False)]}" domain="[('parent_id', '=', client)]"/>
                             </group>
                             <group string="Contact">
                                 <field name="phone" />
@@ -114,6 +114,8 @@
                                 <tree editable="bottom" create="true" delete="true">
                                     <field name="task" />
                                     <field name="remark"/>
+                                    <button name="download_files"
+                                            icon="fa-download" type="object" groups="base.group_user"/>
                                     <field name="document"/>
                                 </tree>
                             </field>
@@ -336,7 +338,7 @@
 
     <!--                                Top menu item                                  -->
 
-    <menuitem id="repair_menu_root" name="Car Repair" web_icon="repair_service,static/description/car_repair.png" groups="repair_service.group_manager"/>
+    <menuitem id="repair_menu_root" name="Car Repair" web_icon="repair_service,static/description/car_repair.png" groups="repair_service.group_manager,repair_service.group_user"/>
 
     <menuitem id="repair_order_menu"
               name="Repair"
