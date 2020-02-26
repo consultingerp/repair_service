@@ -53,8 +53,8 @@ class ProductTemplate(models.Model):
             'sale_purchase_previous_product_cost.last_sale_product_prices_view')
         if self.order_partner_id.id:
             sale_lines = self.env['sale.order.line'].search([('product_id', '=', self.id),
-                                  ('order_partner_id', '=', self.order_partner_id.id)],
-                                 order='create_date DESC').mapped('id')
+                                                             ('order_partner_id', '=', self.order_partner_id.id)],
+                                                            order='create_date DESC').mapped('id')
         else:
             sale_lines = self.env['sale.order.line'].search([('product_id', '=', self.id)],
                                                             order='create_date DESC').mapped('id')
@@ -75,8 +75,8 @@ class ProductTemplate(models.Model):
             'sale_purchase_previous_product_cost.last_sale_product_purchase_prices_view')
         if self.order_partner_id.id:
             purchase_lines = self.env['purchase.order.line'].search([('product_id', '=', self.id),
-                                                                 ('partner_id', '=', self.order_partner_id.id)],
-                                                                order='create_date DESC').mapped('id')
+                                                                     ('partner_id', '=', self.order_partner_id.id)],
+                                                                    order='create_date DESC').mapped('id')
         else:
             purchase_lines = self.env['purchase.order.line'].search([('product_id', '=', self.id)],
                                                                     order='create_date DESC').mapped('id')
@@ -93,5 +93,51 @@ class ProductTemplate(models.Model):
             }
 
 
+class ProductTemplates(models.Model):
+    _inherit = "product.template"
 
+    order_partner_id = fields.Many2one('res.partner', string="Partner")
 
+    def action_sale_product_prices(self):
+        rel_view_id = self.env.ref(
+            'sale_purchase_previous_product_cost.last_sale_product_prices_view')
+        if self.order_partner_id.id:
+            sale_lines = self.env['sale.order.line'].search([('product_id', '=', self.id),
+                                                             ('order_partner_id', '=', self.order_partner_id.id)],
+                                                            order='create_date DESC').mapped('id')
+        else:
+            sale_lines = self.env['sale.order.line'].search([('product_id', '=', self.id)],
+                                                            order='create_date DESC').mapped('id')
+        if not sale_lines:
+            raise Warning("No sales history found.!")
+        else:
+            return {
+                'domain': [('id', 'in', sale_lines)],
+                'views': [(rel_view_id.id, 'tree')],
+                'name': 'Sales History',
+                'res_model': 'sale.order.line',
+                'view_id': False,
+                'type': 'ir.actions.act_window',
+            }
+
+    def action_purchase_product_prices(self):
+        rel_view_id = self.env.ref(
+            'sale_purchase_previous_product_cost.last_sale_product_purchase_prices_view')
+        if self.order_partner_id.id:
+            purchase_lines = self.env['purchase.order.line'].search([('product_id', '=', self.id),
+                                                                     ('partner_id', '=', self.order_partner_id.id)],
+                                                                    order='create_date DESC').mapped('id')
+        else:
+            purchase_lines = self.env['purchase.order.line'].search([('product_id', '=', self.id)],
+                                                                    order='create_date DESC').mapped('id')
+        if not purchase_lines:
+            raise Warning("No purchase history found.!")
+        else:
+            return {
+                'domain': [('id', 'in', purchase_lines)],
+                'views': [(rel_view_id.id, 'tree')],
+                'name': 'Purchase History',
+                'res_model': 'purchase.order.line',
+                'view_id': False,
+                'type': 'ir.actions.act_window',
+            }
