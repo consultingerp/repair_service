@@ -171,38 +171,38 @@ class CarRepair(models.Model):
         sale_order.write({'order_line': [(6, 0, sales_order_line)]})
         self.update({'state': 'send_quotation', 'sale_order_id':sale_order.name})
 
-        for i in self.assign_technicians:
-            partner = self.env['hr.employee'].search([('id','=',i.id)])
-            if partner:
-                body = "Hello, You have been assigned to Repair Service. Please check"
-                pa = self.env['res.partner'].search([('name','=',i.name)]).id
-                pas = self.env['res.partner'].search([('name','=',self.receiving_tech.name)]).id
-                ids = []
-                ids.append(pas)
-                ids.append(pa)
-                channel_search = self.env['mail.channel'].search(['&',('channel_last_seen_partner_ids.partner_id','=',pa),('channel_last_seen_partner_ids.partner_id','=',pas)])
-                li = []
-                for x in channel_search:
-                    li.append(x.id)
-                if not channel_search:
-                    channel_search = self.env['mail.channel'].create({
-                        'name': '',
-                        'channel_last_seen_partner_ids': [(0, 0, {'partner_id': ids})]
-                    })
-                message = self.env['mail.message'].create({
-                    'date' : Datetime.now(),
-                    'model': 'mail.channel',
-                    'res_id': self.id,
-                    'message_type': 'notification',
-                    'body': body,
-                    'moderation_status': 'accepted',
-                    'record_name' : self.env['res.partner'].search([('name','=',i.name)]).name,
-                    'author_id': pas,
-                    'email_from': formataddr((self.receiving_tech.name, self.receiving_tech.private_email)),
-                    'subtype_id': self.env['mail.message.subtype'].search([('name', '=', 'Discussions')]).id,
-                    # 'partner_ids': [(6, 0, [self.env['res.partner'].search([('name','=',i.name)]).id])],
-                    'channel_ids': [(6, 0, li)],
-                })
+        # for i in self.assign_technicians:
+        #     partner = self.env['hr.employee'].search([('id','=',i.id)])
+        #     if partner:
+        #         body = "Hello, You have been assigned to Repair Service. Please check"
+        #         pa = self.env['res.partner'].search([('name','=',i.name)]).id
+        #         pas = self.env['res.partner'].search([('name','=',self.receiving_tech.name)]).id
+        #         ids = []
+        #         ids.append(pas)
+        #         ids.append(pa)
+        #         channel_search = self.env['mail.channel'].search(['&',('channel_last_seen_partner_ids.partner_id','=',pa),('channel_last_seen_partner_ids.partner_id','=',pas)])
+        #         li = []
+        #         for x in channel_search:
+        #             li.append(x.id)
+        #         if not channel_search:
+        #             channel_search = self.env['mail.channel'].create({
+        #                 'name': '',
+        #                 'channel_last_seen_partner_ids': [(0, 0, {'partner_id': ids})]
+        #             })
+        #         message = self.env['mail.message'].create({
+        #             'date' : Datetime.now(),
+        #             'model': 'mail.channel',
+        #             'res_id': self.id,
+        #             'message_type': 'notification',
+        #             'body': body,
+        #             'moderation_status': 'accepted',
+        #             'record_name' : self.env['res.partner'].search([('name','=',i.name)]).name,
+        #             'author_id': pas,
+        #             'email_from': formataddr((self.receiving_tech.name, self.receiving_tech.private_email)),
+        #             'subtype_id': self.env['mail.message.subtype'].search([('name', '=', 'Discussions')]).id,
+        #             # 'partner_ids': [(6, 0, [self.env['res.partner'].search([('name','=',i.name)]).id])],
+        #             'channel_ids': [(6, 0, li)],
+        #         })
 
         return True
 
