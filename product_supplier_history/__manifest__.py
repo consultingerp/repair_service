@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 {
-    'name': 'Car Repair',
+    'name': 'Car Repair - Product/Supplier History',
     'version': '1.3',
     'category': 'Repairs',
     'summary': 'This module shows you the history of a particular product and history of a particular Supplier.',
@@ -14,7 +14,7 @@ This module have new customization of New Car Repair Service .
         'security/ir.model.access.csv',
         'views/product_history_view.xml',
         'views/currency_rates_view.xml',
-        'views/supplier_history_view.xml',
+        # 'views/supplier_history_view.xml',
     ],
     'demo': [
         # 'data/sale_demo.xml',

@@ -19,6 +19,12 @@ class productProductInherit(models.Model):
     product_history = fields.One2many('product.history', 'product_history_id')
 
 
+class productTemplateInherit(models.Model):
+    _inherit = "product.template"
+
+    product_history_tmpl = fields.One2many('product.history', 'product_history_id')
+
+
 # .....................,..................... New Class For Product History ............................................
 
 class productHistory(models.Model):
@@ -49,6 +55,9 @@ class purchaseOrderInherit(models.Model):
                 'quantity': product.product_qty
             })
             product_search = self.env['product.product'].sudo().search([('id', '=', product.product_id.id)], limit=1)
+            # product_search_tmpl = self.env['product.template'].sudo().search([('id', '=', product.product_id.id)], limit=1)
             if product_search:
                 product_search.write({'product_history': [(4, history.id)]})
+            # if product_search_tmpl:
+            #     product_search_tmpl.write({'product_history_tmpl': [(4, history.id)]})
         return True

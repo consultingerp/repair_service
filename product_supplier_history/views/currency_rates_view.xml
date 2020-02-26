@@ -13,6 +13,9 @@
                         string="Currency Rates">
                 </button>
             </xpath>
+            <xpath expr="//field[@name='currency_id']" position="inside">
+<!--                <field name="currency_rates"/>-->
+            </xpath>
         </field>
     </record>
 

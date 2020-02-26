@@ -4,7 +4,7 @@ from odoo import api, fields, models, SUPERUSER_ID, _
 class VendorInherit(models.Model):
     _inherit = 'res.partner'
 
-    supplier_history = fields.One2many('supplier.history', 'supplier_history_id')
+    supplier_history = fields.One2many('supplier.history', 'supplier_history_id', string='History')
 
 
 class SupplierHistory(models.Model):
