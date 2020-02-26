@@ -56,8 +56,6 @@ class CarRepair(models.Model):
 
     multi_image = fields.Many2many('repair.image',  string='Images')
 
-    # image = fields.Many2many(comodel_name="ir.attachment", relation="m2m_ir_attachment_relation",
-    #                             column1="id", column2="attachment_id", string="Image")
     note = fields.Text(string='Descriptions/Remark')
     multi_select = fields.Html('Multi Select Faults')
 

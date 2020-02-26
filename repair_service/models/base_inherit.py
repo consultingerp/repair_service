@@ -45,7 +45,7 @@ class SaleOrders(models.Model):
 # ....................................... Class For Inheriting Partner Modules .........................................
 
 class Partner_inherit(models.Model):
-    _inherit='res.partner'
+    _inherit = 'res.partner'
 
     # res_aprt = fields.Many2one('res.partner', string='Driver Name')
 
@@ -115,8 +115,8 @@ class Partner_inherit(models.Model):
 
 # ....................................... Class For Inheriting Fleet Modules ...........................................
 
-class FleetVehicle(models.Model):
-    _inherit='fleet.vehicle'
+class FleetVehicles(models.Model):
+    _inherit = 'fleet.vehicle'
 
     count = fields.Integer('Services', compute='set_count')
     so_count = fields.Integer('Services', compute='set_so_count')
