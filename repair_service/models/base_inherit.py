@@ -63,7 +63,7 @@ class Partner_inherit(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         res = super(Partner_inherit, self).create(vals_list)
-        print(res)
+        _logger.info(res)
         if res.driver_bool == True:
             partner = self.env['res.partner'].search([('id', '=', res.parent_id.id)])
             if partner:
