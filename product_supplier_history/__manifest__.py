@@ -14,7 +14,7 @@ This module have new customization of New Car Repair Service .
         'security/ir.model.access.csv',
         'views/product_history_view.xml',
         'views/currency_rates_view.xml',
-        'views/supplier_history_view.xml',
+        # 'views/supplier_history_view.xml',
     ],
     'demo': [
         # 'data/sale_demo.xml',
