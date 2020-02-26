@@ -68,7 +68,7 @@ class Partner_inherit(models.Model):
             partner = self.env['res.partner'].search([('id', '=', res.parent_id.id)])
             if partner:
                 partner.write({'drive': [(4, res.id)]})
-        return True
+        return res
 
 
     # @api.model
