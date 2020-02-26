@@ -72,7 +72,7 @@ class ProductTemplate(models.Model):
 
     def action_purchase_product_prices(self):
         rel_view_id = self.env.ref(
-            'sale_purchase_previous_product_cost.last_sale_product_purchase_prices_view')
+            'product_supplier_history.last_sale_product_purchase_prices_view')
         if self.order_partner_id.id:
             purchase_lines = self.env['purchase.order.line'].search([('product_id', '=', self.id),
                                                                      ('partner_id', '=', self.order_partner_id.id)],
@@ -100,7 +100,7 @@ class ProductTemplates(models.Model):
 
     def action_sale_product_prices(self):
         rel_view_id = self.env.ref(
-            'sale_purchase_previous_product_cost.last_sale_product_prices_view')
+            'product_supplier_history.last_sale_product_prices_view')
         if self.order_partner_id.id:
             sale_lines = self.env['sale.order.line'].search([('product_id', '=', self.id),
                                                              ('order_partner_id', '=', self.order_partner_id.id)],
