@@ -1,4 +1,3 @@
-
 # ................................. Importing Library And Directives ...................................................
 
 from datetime import datetime, timedelta
@@ -14,6 +13,7 @@ from odoo.tools import formataddr
 
 _logger = logging.getLogger(__name__)
 
+
 # ................................... End Of Importing Library And Directives ..........................................
 
 # .............................. Class For Car Repair Diagnosis ........................................................
@@ -28,16 +28,17 @@ class CarRepair(models.Model):
     _check_company_auto = True
 
     def _default_employee(self):
-        return self.env.context.get('default_employee_id') or self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
+        return self.env.context.get('default_employee_id') or self.env['hr.employee'].search(
+            [('user_id', '=', self.env.uid)], limit=1)
 
     state = fields.Selection([('diagnosis', 'Car Diagnosis'), ('send_quotation', 'Send Quotation'),
                               ('inventory_move', 'Inventory Move'), ('work_order', 'Work Order'),
-                              ('inspections','Inspections'), ('invoice', 'Invoice')],
+                              ('inspections', 'Inspections'), ('invoice', 'Invoice')],
                              'Status', readonly=True, default='diagnosis')
 
     subject = fields.Char(string='Subject')
     # receiving_tech = fields.Many2one('hr.employee', string='Receiving Technician',  default=lambda self: self.env.user)
-    receiving_tech = fields.Many2one('hr.employee', string='Receiving Technician',  default=_default_employee)
+    receiving_tech = fields.Many2one('hr.employee', string='Receiving Technician', default=_default_employee)
     priority = fields.Selection([('0', 'Not urgent'), ('1', 'Normal'), ('2', 'Urgent'), ('3', 'Very Urgent')],
                                 'Priority',
                                 readonly=True, default='1')
@@ -54,7 +55,7 @@ class CarRepair(models.Model):
 
     description = fields.Text('Note')
 
-    multi_image = fields.Many2many('repair.image',  string='Images')
+    multi_image = fields.Many2many('repair.image', string='Images')
 
     note = fields.Text(string='Descriptions/Remark')
     multi_select = fields.Html('Multi Select Faults')
@@ -72,7 +73,6 @@ class CarRepair(models.Model):
     sale_order_id = fields.Char('Sale Order ID')
 
     work_order_id = fields.Char('Work Order Id')
-
 
     # repair_count = fields.Integer(compute='_compute_repair_count', string='Repair Count')
 
@@ -95,9 +95,10 @@ class CarRepair(models.Model):
         """
         for repair in self:
             repair.phone = self.contacts_name.phone
-            repair.mobile =self.contacts_name.mobile
+            repair.mobile = self.contacts_name.mobile
             repair.email = self.contacts_name.email
-# ........................................... Function for Inventory Move Button .......................................
+
+    # ........................................... Function for Inventory Move Button .......................................
 
     def action_view_inventory_move(self):
         view = self.env.ref('stock.view_picking_form')
@@ -115,9 +116,9 @@ class CarRepair(models.Model):
         }
         return res
 
-# ............................................. End of Function for Inventory Move Button ..............................
+    # ............................................. End of Function for Inventory Move Button ..............................
 
-# ........................................... Function for Work Order Button ...........................................
+    # ........................................... Function for Work Order Button ...........................................
 
     def action_view_work_order(self):
         view = self.env.ref('repair_service.view_work_order_form')
@@ -135,9 +136,9 @@ class CarRepair(models.Model):
         }
         return res
 
-# ............................................. End of Function for Work Order Button ..............................
+    # ............................................. End of Function for Work Order Button ..............................
 
-# .............................................. Function for Confirm Diagnosis And Send Quotation .....................
+    # .............................................. Function for Confirm Diagnosis And Send Quotation .....................
     def send_quotation(self):
         sale_order = self.env['sale.order'].sudo().create({
             'partner_id': self.client.id,
@@ -156,7 +157,8 @@ class CarRepair(models.Model):
             orders_line = self.env['sale.order.line'].sudo().create(vals_order_line)
             sales_order_line.append(orders_line.id)
         for service in self.service_line:
-            service_obj = self.env['product.product'].sudo().search([('id', '=', service.service.product_variant_id.id)])
+            service_obj = self.env['product.product'].sudo().search(
+                [('id', '=', service.service.product_variant_id.id)])
             vals_order_line = {
                 'order_id': sale_order.id,
                 'product_id': service_obj.id,
@@ -167,7 +169,7 @@ class CarRepair(models.Model):
             orders_line = self.env['sale.order.line'].sudo().create(vals_order_line)
             sales_order_line.append(orders_line.id)
         sale_order.write({'order_line': [(6, 0, sales_order_line)]})
-        self.update({'state': 'send_quotation', 'sale_order_id':sale_order.name})
+        self.update({'state': 'send_quotation', 'sale_order_id': sale_order.name})
 
         # for i in self.assign_technicians:
         #     partner = self.env['hr.employee'].search([('id','=',i.id)])
@@ -206,15 +208,17 @@ class CarRepair(models.Model):
 
     def action_view_partner_invoices(self):
         for i in self.assign_technicians:
-            partner = self.env['hr.employee'].search([('id','=',i.id)])
+            partner = self.env['hr.employee'].search([('id', '=', i.id)])
             if partner:
                 body = "Hello, You have been assigned to Repair Service. Please check"
-                pa = self.env['res.partner'].search([('name','=',i.name)]).id
-                pas = self.env['res.partner'].search([('name','=',self.receiving_tech.name)]).id
+                pa = self.env['res.partner'].search([('name', '=', i.name)]).id
+                pas = self.env['res.partner'].search([('name', '=', self.receiving_tech.name)]).id
                 ids = []
                 ids.append(pas)
                 ids.append(pa)
-                channel_search = self.env['mail.channel'].search(['&',('channel_last_seen_partner_ids.partner_id','=',pa),('channel_last_seen_partner_ids.partner_id','=',pas)])
+                channel_search = self.env['mail.channel'].search(
+                    ['&', ('channel_last_seen_partner_ids.partner_id', '=', pa),
+                     ('channel_last_seen_partner_ids.partner_id', '=', pas)])
                 li = []
                 for x in channel_search:
                     li.append(x.id)
@@ -224,13 +228,13 @@ class CarRepair(models.Model):
                         'channel_last_seen_partner_ids': [(0, 0, {'partner_id': ids})]
                     })
                 message = self.env['mail.message'].create({
-                    'date' : Datetime.now(),
+                    'date': Datetime.now(),
                     'model': 'mail.channel',
                     'res_id': self.id,
                     'message_type': 'notification',
                     'body': body,
                     'moderation_status': 'accepted',
-                    'record_name' : self.env['res.partner'].search([('name','=',i.name)]).name,
+                    'record_name': self.env['res.partner'].search([('name', '=', i.name)]).name,
                     'author_id': pas,
                     'email_from': formataddr((self.receiving_tech.name, self.receiving_tech.private_email)),
                     'subtype_id': self.env['mail.message.subtype'].search([('name', '=', 'Discussions')]).id,
@@ -242,6 +246,7 @@ class CarRepair(models.Model):
     def done_inspection(self):
         self.update({'state': 'invoice'})
         return True
+
 
 # ............................... End of Function Confirm Diagnosis And Send Quotation .................................
 
@@ -264,14 +269,15 @@ class RepairTaskLine(models.Model):
     task = fields.Many2one('task.name', 'Task')
 
     def download_files(self):
-        a=10
-        doc=self.document
+        a = 10
+        doc = self.document
         return self.document
         # return {
         #     'type': 'ir.actions.act_url',
         #     'target': 'self',
         #     'url': self.document,
         # }
+
 
 # ................................End of  Class Repair Task List .......................................................
 
@@ -284,6 +290,7 @@ class TaskName(models.Model):
     _check_company_auto = True
 
     name = fields.Char('Task Name')
+
 
 # ................................End Of Class Repair Task Name ........................................................
 
@@ -300,6 +307,7 @@ class RepairPartLine(models.Model):
                                                                      ('type', '=', 'product')])
     part_qty = fields.Float('Quantity')
 
+
 # ................................End Of Class For Repair Part Line ....................................................
 
 # ................................ Class For Repair Part Name ..........................................................
@@ -312,6 +320,7 @@ class PartName(models.Model):
 
     name = fields.Char('Part Name')
 
+
 # ................................End Of Class For Repair Part Name ....................................................
 
 # ................................ Class For Repair Service Line .......................................................
@@ -322,9 +331,10 @@ class RepairServiceLine(models.Model):
     _order = 'id desc'
     _check_company_auto = True
 
-    service_line =fields.Many2one('car.repair', 'Service')
+    service_line = fields.Many2one('car.repair', 'Service')
     service = fields.Many2one('product.product', 'Service', domain=[('type', '=', 'service')])
     service_qty = fields.Float('Quantity')
+
 
 # ................................End Of Class For Repair Service Line .................................................
 
@@ -337,6 +347,7 @@ class ServiceName(models.Model):
     _check_company_auto = True
 
     name = fields.Char('Service Name')
+
 
 # ................................End Of Class Repair Service Name .....................................................
 
@@ -358,6 +369,7 @@ class RepairImage(models.Model):
     def onchnage_image(self):
         self.dost = self.image
 
+
 # ............................. End Of Class For Adding Images In Repair Action.........................................
 
 
@@ -378,7 +390,6 @@ class WorkOrder(models.Model):
     # subject = fields.Char(string='Subject')
     receiving_tech = fields.Many2one('hr.employee', string='Receiving Technician')
 
-
     receipt_date = fields.Date(string='Date Of Receipt', default=lambda self: fields.Datetime.now())
 
     start_time = fields.Datetime(string='Start Time')
@@ -388,22 +399,21 @@ class WorkOrder(models.Model):
 
     task_name = fields.Char('Task')
 
-
     def start_task(self):
         current_time = datetime.today()
-        self.update({'state': 'in_progress','start_time': current_time})
+        self.update({'state': 'in_progress', 'start_time': current_time})
 
     def complete_task(self):
 
         complete_time = datetime.today()
 
         dur = (datetime.today() - self.start_time)
-        duration = dur.seconds//3600
+        duration = dur.seconds // 3600
 
         minutes = dur.seconds / 60
-        min = round(minutes,2)
+        min = round(minutes, 2)
 
-        self.update({'state': 'completed','end_time': complete_time,'duration': dur,'hour_worked': duration})
+        self.update({'state': 'completed', 'end_time': complete_time, 'duration': dur, 'hour_worked': duration})
 
         work_count = self.env['work.order'].search_count([('work_order', '=', self.work_order.id)])
 
