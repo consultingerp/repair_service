@@ -31,8 +31,8 @@ class productHistory(models.Model):
     _name = "product.history"
     _order = 'id desc'
 
-    product_history_id = fields.Many2one('product.product', string='History ID')
-    product_history_id_tmpl = fields.Many2one('product.template', string='History ID')
+    product_history_id = fields.Many2one('product.product', string='Product Variants History ID', invisible=True)
+    product_history_id_tmpl = fields.Many2one('product.template', string='Product Template History ID', invisible=True)
     order_ref = fields.Char(string='Order Reference')
     date = fields.Datetime(string='Date')
     supplier = fields.Many2one('res.partner', string='Supplier')

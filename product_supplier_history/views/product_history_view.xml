@@ -8,7 +8,7 @@
             <xpath expr="//page[@name='inventory']" position="after">
                 <page string="History" name="product_history">
                     <group>
-                        <field name="product_history">
+                        <field name="product_history" string="Product History">
                             <tree editable="top" create="true" delete="true">
                                 <field name="order_ref"/>
                                 <field name="date"/>

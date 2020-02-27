@@ -8,7 +8,7 @@
             <xpath expr="//page[@name='internal_notes']" position="after">
                 <page string="History">
                     <group>
-                        <field name="supplier_history">
+                        <field name="partner_history">
                             <tree editable="top" create="true" delete="true">
                                 <field name="order_ref" />
                                 <field name="date"/>
