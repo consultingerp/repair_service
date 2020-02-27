@@ -8,11 +8,11 @@
             <xpath expr="//page[@name='inventory']" position="after">
                 <page string="History" name="product_history">
                     <group>
-                        <field name="product_history" >
+                        <field name="product_history">
                             <tree editable="top" create="true" delete="true">
-                                <field name="order_ref" />
+                                <field name="order_ref"/>
                                 <field name="date"/>
-                                <field name="supplier"/>
+                                <field name="supplier" string="Partner"/>
                                 <field name="price"/>
                                 <field name="quantity"/>
                             </tree>
@@ -31,11 +31,11 @@
             <xpath expr="//page[@name='inventory']" position="after">
                 <page string="History" name="product_history">
                     <group>
-                        <field name="product_history_tmpl">
+                        <field name="product_history_tmpl" string="Product History">
                             <tree editable="top" create="true" delete="true">
-                                <field name="order_ref" />
+                                <field name="order_ref"/>
                                 <field name="date"/>
-                                <field name="supplier"/>
+                                <field name="supplier" string="Partner"/>
                                 <field name="price"/>
                                 <field name="quantity"/>
                             </tree>

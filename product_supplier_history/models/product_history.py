@@ -22,7 +22,7 @@ class productProductInherit(models.Model):
 class productTemplateInherit(models.Model):
     _inherit = "product.template"
 
-    product_history_tmpl = fields.One2many('product.history', 'product_history_id')
+    product_history_tmpl = fields.One2many('product.history', 'product_history_id_tmpl')
 
 
 # .....................,..................... New Class For Product History ............................................
@@ -32,7 +32,8 @@ class productHistory(models.Model):
     _order = 'id desc'
 
     product_history_id = fields.Many2one('product.product', string='History ID')
-    order_ref = fields.Many2one('purchase.order', string='Order Reference')
+    product_history_id_tmpl = fields.Many2one('product.template', string='History ID')
+    order_ref = fields.Char(string='Order Reference')
     date = fields.Datetime(string='Date')
     supplier = fields.Many2one('res.partner', string='Supplier')
     price = fields.Float(string='Price')
@@ -41,23 +42,45 @@ class productHistory(models.Model):
 
 # ........................................... Class For Inheriting Product  ............................................
 
-class purchaseOrderInherit(models.Model):
+class PurchaseOrderInherit(models.Model):
     _inherit = "purchase.order"
 
     def button_confirm(self):
-        res = super(purchaseOrderInherit, self).button_confirm()
+        res = super(PurchaseOrderInherit, self).button_confirm()
         for product in self.order_line:
             history = self.env['product.history'].sudo().create({
-                'order_ref': self.id,
+                'order_ref': self.name,
                 'date': self.date_order,
                 'supplier': self.partner_id.id,
                 'price': product.price_unit,
                 'quantity': product.product_qty
             })
             product_search = self.env['product.product'].sudo().search([('id', '=', product.product_id.id)], limit=1)
-            # product_search_tmpl = self.env['product.template'].sudo().search([('id', '=', product.product_id.id)], limit=1)
+            product_search_tmpl = self.env['product.template'].sudo().search([('id', '=', product_search.product_tmpl_id.id)], limit=1)
             if product_search:
                 product_search.write({'product_history': [(4, history.id)]})
-            # if product_search_tmpl:
-            #     product_search_tmpl.write({'product_history_tmpl': [(4, history.id)]})
-        return True
+            if product_search_tmpl:
+                product_search_tmpl.write({'product_history_tmpl': [(4, history.id)]})
+        return res
+
+
+class SaleOrderInherit(models.Model):
+    _inherit = 'sale.order'
+
+    def action_confirm(self):
+        res = super(SaleOrderInherit, self).action_confirm()
+        for product in self.order_line:
+            history = self.env['product.history'].sudo().create({
+                'order_ref': self.name,
+                'date': self.date_order,
+                'supplier': self.partner_id.id,
+                'price': product.price_unit,
+                'quantity': product.product_uom_qty
+            })
+            product_search = self.env['product.product'].sudo().search([('id', '=', product.product_id.id)], limit=1)
+            product_search_tmpl = self.env['product.template'].sudo().search([('id', '=', product_search.product_tmpl_id.id)], limit=1)
+            if product_search:
+                product_search.write({'product_history': [(4, history.id)]})
+            if product_search_tmpl:
+                product_search_tmpl.write({'product_history_tmpl': [(4, history.id)]})
+        return res

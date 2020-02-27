@@ -9,7 +9,7 @@
     'description': """
 This module have new customization of New Car Repair Service .
     """,
-    'depends': ['base','stock','sale','product','mail','purchase'],
+    'depends': ['base','stock','sale','product','mail','purchase', 'fleet'],
     'data': [
         'security/ir.model.access.csv',
         'views/product_history_view.xml',

@@ -35,4 +35,23 @@ class PurchaseOrderInherit(models.Model):
             supplier_search = self.env['res.partner'].sudo().search([('id', '=', supplier.partner_id.id)], limit=1)
             if supplier_search:
                 supplier_search.write({'supplier_history': [(4, history.id)]})
-        return True
+        return res
+
+
+class SaleOrderInherit(models.Model):
+    _inherit = "sale.order"
+
+    def button_confirm(self):
+        res = super(SaleOrderInherit, self).action_confirm()
+        for supplier in self.order_line:
+            history = self.env['supplier.history'].sudo().create({
+                'order_ref': self.id,
+                'date': self.date_order,
+                # 'supplier': self.partner_id.id,
+                'price': supplier.price_unit,
+                'quantity': supplier.product_qty
+            })
+            supplier_search = self.env['res.partner'].sudo().search([('id', '=', supplier.partner_id.id)], limit=1)
+            if supplier_search:
+                supplier_search.write({'supplier_history': [(4, history.id)]})
+        return res
