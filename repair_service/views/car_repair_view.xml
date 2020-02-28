@@ -29,6 +29,11 @@
                     <field name="state" widget="statusbar"/>
                 </header>
                 <div class="oe_button_box" name="button_box">
+                    <button name="action_view_sale_order"
+                            type="object"
+                            class="oe_stat_button" icon="fa-credit-card-alt"
+                            string="Sale Order" attrs="{'invisible': [('state', 'in', ['diagnosis'])]}">
+                    </button>
                     <button name="action_view_inventory_move"
                             type="object"
                             class="oe_stat_button" icon="fa-exchange"
@@ -38,11 +43,6 @@
                             type="object"
                             class="oe_stat_button" icon="fa-briefcase"
                             string="Work Order" attrs="{'invisible': [('state', 'not in', ['inventory_move','work_order','inspections','invoice'])]}">
-                    </button>
-                    <button name="action_view_sale_order"
-                            type="object"
-                            class="oe_stat_button" icon="fa-credit-card-alt"
-                            string="Sale Order" attrs="{'invisible': [('state', 'in', ['diagnosis'])]}">
                     </button>
                     <button name="action_view_invoices"
                             type="object"
@@ -67,7 +67,7 @@
                     <page string="General" name="general">
                         <group>
                             <group string="Client Info" name="client_info">
-<!--                                <button type="object" icon="fa-pencil-square-o" name="action_view_partner_invoices" string="Test"/>-->
+                                <!--                                <button type="object" icon="fa-pencil-square-o" name="action_view_partner_invoices" string="Test"/>-->
                                 <field name="client" domain="[('is_company', '=', True)]" required="1"/>
                                 <field name="contacts_name" attrs="{'invisible': [('client', '=', False)]}" domain="[('parent_id', '=', client)]"/>
                             </group>
@@ -124,9 +124,8 @@
                                 <tree editable="bottom" create="true" delete="true">
                                     <field name="task" />
                                     <field name="remark"/>
-                                    <button name="download_files"
-                                            icon="fa-download" type="object" groups="base.group_user"/>
-                                    <field name="document"/>
+                                    <field name="document" widget="binary" filename="file_name"/>
+                                    <field name="file_name" invisible="1"/>
                                 </tree>
                             </field>
                         </group>
@@ -140,7 +139,7 @@
                                             <field name="part"/>
                                             <!--                                            <field name="product_id"/>-->
                                             <!--                                            <field name="product_template_id"/>-->
-                                            <field name="part_qty"/>
+                                            <field name="part_qty" required="1"/>
                                         </tree>
                                     </field>
                                 </group>
@@ -150,7 +149,7 @@
                                     <field name="service_line" >
                                         <tree editable="bottom" create="true" delete="true">
                                             <field name="service"/>
-                                            <field name="service_qty"/>
+                                            <field name="service_qty" required="1"/>
                                         </tree>
                                     </field>
                                 </group>
@@ -294,43 +293,43 @@
         <field name="arch" type="xml">
             <tree string="Task">
                 <field name="name" />
-<!--                <field name="remark" />-->
-<!--                <field name="document" />-->
+                <!--                <field name="remark" />-->
+                <!--                <field name="document" />-->
             </tree>
         </field>
     </record>
 
-        <record id="view_task_form" model="ir.ui.view">
+    <record id="view_task_form" model="ir.ui.view">
         <field name="name">task.form</field>
         <field name="model">task.name</field>
         <field name="arch" type="xml">
             <form>
                 <header>
-<!--                    <button name="start_task" type="object" string="Start" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['start'])]}"/>-->
-<!--                    <button name="complete_task" type="object" string="Complete" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['in_progress'])]}"/>-->
-<!--                    <field name="state" widget="statusbar" statusbar_visible="start,in_progress,completed"/>-->
+                    <!--                    <button name="start_task" type="object" string="Start" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['start'])]}"/>-->
+                    <!--                    <button name="complete_task" type="object" string="Complete" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['in_progress'])]}"/>-->
+                    <!--                    <field name="state" widget="statusbar" statusbar_visible="start,in_progress,completed"/>-->
                 </header>
                 <group>
                     <group>
                         <field name="name" required="1"/>
-<!--                        <field name="remark" />-->
-<!--                        <field name="document" />-->
+                        <!--                        <field name="remark" />-->
+                        <!--                        <field name="document" />-->
                     </group>
                     <group>
-<!--                        <field name="receipt_date" />-->
+                        <!--                        <field name="receipt_date" />-->
                     </group>
                 </group>
-<!--                <notebook>-->
-<!--                    <page string="General Information" name="general_information">-->
-<!--                        <group string="Task">-->
-<!--                            <group>-->
-<!--                                <field name="task_name" />-->
-<!--                                <field name="start_time" />-->
-<!--                                <field name="end_time" />-->
-<!--                            </group>-->
-<!--                        </group>-->
-<!--                    </page>-->
-<!--                </notebook>-->
+                <!--                <notebook>-->
+                <!--                    <page string="General Information" name="general_information">-->
+                <!--                        <group string="Task">-->
+                <!--                            <group>-->
+                <!--                                <field name="task_name" />-->
+                <!--                                <field name="start_time" />-->
+                <!--                                <field name="end_time" />-->
+                <!--                            </group>-->
+                <!--                        </group>-->
+                <!--                    </page>-->
+                <!--                </notebook>-->
             </form>
         </field>
     </record>

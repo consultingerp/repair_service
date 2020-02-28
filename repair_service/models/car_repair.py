@@ -140,11 +140,11 @@ class CarRepair(models.Model):
     def action_view_invoices(self):
         sale_order_id = self.env['sale.order'].search([('name', '=', self.sale_order_id)])
         res = {
-            'name': 'Sale Order',
+            'name': 'Account Invoice',
             'type': 'ir.actions.act_window',
             'view_type': 'form',
             'view_mode': 'form',
-            'res_model': 'sale.order',
+            'res_model': 'account.move',
             'res_id': sale_order_id.id,
             'target': 'current',
         }
@@ -299,6 +299,7 @@ class RepairTaskLine(models.Model):
 
     remark = fields.Char('Remark')
     document = fields.Binary('Document')
+    file_name = fields.Char('Doc Name')
     repair_id = fields.Many2one('car.repair', 'Repair ID')
     task = fields.Many2one('task.name', 'Task')
 
