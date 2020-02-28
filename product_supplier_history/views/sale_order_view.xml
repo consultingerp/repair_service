@@ -50,11 +50,11 @@
                     </group>
                     <gruop>
                         <group>
-                             <button name="action_sale_product_prices" string="Previous Sale Rates"
+                             <button name="action_sale_product_prices" string="Sale Order History"
                                 help="Last Prices" type="object"/>
                         </group>
                         <group>
-                            <button name="action_purchase_product_prices" string="Previous Purchase Rates"
+                            <button name="action_purchase_product_prices" string="Purchase Order History"
                                 help="Last Prices" type="object"/>
                         </group>
                     </gruop>
