@@ -139,7 +139,7 @@ class CarRepair(models.Model):
 
     def action_view_invoices(self):
         sale_order_id = self.env['sale.order'].search([('name', '=', self.sale_order_id)])
-        account_inv = self.env['account.move'].search([('invoice_origin', '=', 'S/2020/02/00036')])
+        account_inv = self.env['account.move'].search([('invoice_origin', '=', sale_order_id.name)])
         vals = []
         if account_inv:
             for rec in account_inv:
