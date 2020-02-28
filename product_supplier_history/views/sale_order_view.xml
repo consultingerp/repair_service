@@ -45,7 +45,7 @@
                 <page string="Price History" name="previous_sale_history">
                     <group>
                         <group>
-                            <field name="order_partner_id"/>
+                         <!--   <field name="order_partner_id"/>-->
                         </group>
                     </group>
                     <gruop>
@@ -73,16 +73,16 @@
                 <page string="Price History" name="previous_sale_history">
                     <group>
                         <group>
-                            <field name="order_partner_id"/>
+                            <!--<field name="order_partner_id"/>-->
                         </group>
                     </group>
                     <gruop>
                         <group>
-                             <button name="action_sale_product_prices" string="Previous Sale Price"
+                             <button name="action_sale_product_prices" string="Sale Order History"
                                 help="Last Prices" type="object"/>
                         </group>
                         <group>
-                            <button name="action_purchase_product_prices" string="Previous Purchase Price"
+                            <button name="action_purchase_product_prices" string="Purchase Order History"
                                 help="Last Prices" type="object"/>
                         </group>
                     </gruop>
