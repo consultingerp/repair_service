@@ -139,13 +139,19 @@ class CarRepair(models.Model):
 
     def action_view_invoices(self):
         sale_order_id = self.env['sale.order'].search([('name', '=', self.sale_order_id)])
+        account_inv = self.env['account.move'].search([('invoice_origin', '=', 'S/2020/02/00036')])
+        vals = []
+        if account_inv:
+            for rec in account_inv:
+                vals.append(rec.id)
+
         res = {
             'name': 'Account Invoice',
             'type': 'ir.actions.act_window',
-            'view_type': 'form',
-            'view_mode': 'form',
+            'view_type': 'tree',
+            'view_mode': 'tree',
             'res_model': 'account.move',
-            'res_id': sale_order_id.id,
+            'domain': [('id', '=', vals)],
             'target': 'current',
         }
         return res
