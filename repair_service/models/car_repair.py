@@ -118,6 +118,40 @@ class CarRepair(models.Model):
 
     # ............................................. End of Function for Inventory Move Button ..............................
 
+    # ........................................... Function for Sales Order Button .......................................
+
+    def action_view_sale_order(self):
+        sale_order_id = self.env['sale.order'].search([('name', '=', self.sale_order_id)])
+        res = {
+            'name': 'Sale Order',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'sale.order',
+            'res_id': sale_order_id.id,
+            'target': 'current',
+        }
+        return res
+
+        # ............................................. End of Function for Sales Order Button ..............................
+
+        # ........................................... Function for Invoice Button .......................................
+
+    def action_view_invoices(self):
+        sale_order_id = self.env['sale.order'].search([('name', '=', self.sale_order_id)])
+        res = {
+            'name': 'Sale Order',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'sale.order',
+            'res_id': sale_order_id.id,
+            'target': 'current',
+        }
+        return res
+
+        # ............................................. End of Function for Invoice Button ..............................
+
     # ........................................... Function for Work Order Button ...........................................
 
     def action_view_work_order(self):

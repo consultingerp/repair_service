@@ -39,6 +39,16 @@
                             class="oe_stat_button" icon="fa-briefcase"
                             string="Work Order" attrs="{'invisible': [('state', 'not in', ['inventory_move','work_order','inspections','invoice'])]}">
                     </button>
+                    <button name="action_view_sale_order"
+                            type="object"
+                            class="oe_stat_button" icon="fa-credit-card-alt"
+                            string="Sale Order" attrs="{'invisible': [('state', 'in', ['diagnosis'])]}">
+                    </button>
+                    <button name="action_view_invoices"
+                            type="object"
+                            class="oe_stat_button" icon="fa-book"
+                            string="Invoice" attrs="{'invisible': [('state', 'in', ['diagnosis','inventory_move','work_order','inspections'])]}">
+                    </button>
                 </div>
                 <group>
                     <group>
