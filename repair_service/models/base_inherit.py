@@ -125,6 +125,15 @@ class FleetVehicles(models.Model):
     count = fields.Integer('Services', compute='set_count')
     so_count = fields.Integer('Services', compute='set_so_count')
     res_company = fields.Many2one('res.partner', string="Company")
+    driver_ids = fields.Many2many('res.partner', 'rel_partner_fleet', 'fleet_id', 'partner_id', "Drivers")
+
+    @api.onchange('res_company')
+    def on_change_company_driver(self):
+        if self.res_company:
+            search_driver = self.env['res.partner'].search([('parent_id', '=', self.res_company.id), ('driver_bool', '=', True)])
+            return {'domain': {'driver_ids': [('id', 'in', search_driver.ids)]}}
+        else:
+            return
 
     def set_count(self):
         search_res_id = self.env['car.repair'].search([('client', '=', self.driver_id.id)])

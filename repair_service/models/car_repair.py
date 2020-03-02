@@ -148,8 +148,8 @@ class CarRepair(models.Model):
         res = {
             'name': 'Account Invoice',
             'type': 'ir.actions.act_window',
-            'view_type': 'tree',
-            'view_mode': 'tree',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
             'res_model': 'account.move',
             'domain': [('id', '=', vals)],
             'target': 'current',
