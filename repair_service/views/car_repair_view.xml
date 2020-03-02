@@ -47,7 +47,7 @@
                     <button name="action_view_invoices"
                             type="object"
                             class="oe_stat_button" icon="fa-book"
-                            string="Invoice" attrs="{'invisible': [('state', 'in', ['diagnosis','inventory_move','work_order','inspections'])]}">
+                            string="Invoice" attrs="{'invisible': [('state', 'in', ['diagnosis','send_quotation','inventory_move','work_order','inspections'])]}">
                     </button>
                 </div>
                 <group>
