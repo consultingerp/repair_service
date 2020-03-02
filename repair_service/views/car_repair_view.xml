@@ -75,7 +75,7 @@
                                 <field name="phone" />
                                 <field name="mobile" />
                                 <field name="email" />
-                                <field name="contact_no" />
+<!--                                <field name="contact_no" />-->
                             </group>
                         </group>
                     </page>
