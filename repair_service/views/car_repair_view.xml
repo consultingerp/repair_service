@@ -75,7 +75,7 @@
                                 <field name="phone" />
                                 <field name="mobile" />
                                 <field name="email" />
-<!--                                <field name="contact_no" />-->
+                                <!--                                <field name="contact_no" />-->
                             </group>
                         </group>
                     </page>
@@ -110,7 +110,7 @@
                                 <field name="note" />
                             </group>
                             <group>
-                                <field name="multi_select" />
+                                <field name="multi_select" widget="many2many_checkboxes" editable="bottom"/>
                                 <label for="digital_signature" string="Signature" />
                                 <h2>
                                     <field name="digital_signature" widget="signature"/>
@@ -344,6 +344,41 @@
         </field>
     </record>
 
+    <record id="faults_config_tree" model="ir.ui.view">
+        <field name="name">faults.config.tree</field>
+        <field name="model">faults.config</field>
+        <field name="priority">2</field>
+        <field name="arch" type="xml">
+            <tree string="Faults Configuration">
+                <field name="faults_name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_faults_config_form" model="ir.ui.view">
+        <field name="name">Faults Configuration</field>
+        <field name="model">faults.config</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="faults_name" required="1"/>
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_faults_config" model="ir.actions.act_window">
+        <field name="name">Faults Configuration</field>
+        <field name="res_model">faults.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Create Faults
+            </p>
+        </field>
+    </record>
 
     <!--                                Top menu item                                  -->
 
@@ -368,6 +403,13 @@
               action="action_task_view"
               parent="repair_menu_root"
               sequence="4"
+              groups="repair_service.group_manager"/>
+
+    <menuitem id="multi_select_faults_menu"
+              name="Faults Configuration"
+              action="action_faults_config"
+              parent="repair_menu_root"
+              sequence="5"
               groups="repair_service.group_manager"/>
 
     <!--        <menuitem id="menu_repair_config"-->

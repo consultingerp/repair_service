@@ -17,6 +17,11 @@ _logger = logging.getLogger(__name__)
 # ................................... End Of Importing Library And Directives ..........................................
 
 # .............................. Class For Car Repair Diagnosis ........................................................
+class FaultsConfiguration(models.Model):
+    _name = 'faults.config'
+    _rec_name = 'faults_name'
+
+    faults_name = fields.Char("Faults")
 
 
 class CarRepair(models.Model):
@@ -58,7 +63,7 @@ class CarRepair(models.Model):
     multi_image = fields.Many2many('repair.image', string='Images')
 
     note = fields.Text(string='Descriptions/Remark')
-    multi_select = fields.Html('Multi Select Faults')
+    multi_select = fields.Many2many('faults.config', string='Multi Select Faults')
 
     digital_signature = fields.Binary('Signature')
 
