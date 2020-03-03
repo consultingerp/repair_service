@@ -32,7 +32,6 @@
             <xpath expr="//field[@name='type']" position="after">
                 <field name="supplier_rank" invisible="1"/>
                 <field name="customer_rank" invisible="1"/>
-                <!--                <field name="res_aprt" />-->
             </xpath>
 
             <xpath expr="//notebook/page/field/form/sheet/group/group/field[@name='mobile']" position="after">
@@ -40,11 +39,7 @@
             </xpath>
 
             <xpath expr="//notebook/page[@name='internal_notes']" position="after">
-                <!--                <page name="driver" string="Driver" attrs="{'invisible': [('company_type', '=', 'person')]}">-->
                 <page name="driver" string="Driver" attrs="{'invisible': [('company_type', '=', 'person')]}">
-                    <!--                <page name="driver" string="Driver" attrs="{'invisible': ['|', ('company_type', '=', 'person'), ('supplier_rank', '=',1)]}">-->
-                    <!--                    <group name="container_row_2">-->
-                    <!--                        <group string="Driver" name="drive">-->
                     <field name="drive" mode="kanban" context="{'default_parent_id': active_id, 'default_street': street, 'default_street2': street2, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_lang': lang, 'default_user_id': user_id, 'default_type': 'other'}">
                         <kanban>
                             <field name="id"/>
@@ -104,8 +99,6 @@
                             </templates>
                         </kanban>
                     </field>
-                    <!--                        </group>-->
-                    <!--                    </group>-->
                 </page>
             </xpath>
 
@@ -114,7 +107,6 @@
                         name="show_service"
                         class="oe_stat_button"
                         icon="fa-wrench" string="Repair Services" >
-                    <!--                    <field name="repair_count"/>-->
                 </button>
                 <button type="object"
                         name="show_vehicles"
@@ -142,53 +134,18 @@
                                 icon="fa-history">
                             <field name="history_count" widget="statinfo" string="Drivers History"/>
                         </button>
-                        <!--                        <button name="return_action_to_open"-->
-                        <!--                                type="object"-->
-                        <!--                                class="oe_stat_button"-->
-                        <!--                                icon="fa-book"-->
-                        <!--                                context="{'xml_id':'fleet_vehicle_log_contract_action'}"-->
-                        <!--                                help="show the contract for this vehicle">-->
-                        <!--                            <field name="contract_count" widget="statinfo" string="Contracts"/>-->
-                        <!--                        </button>-->
-                        <!--                        <button name="act_show_log_cost"-->
-                        <!--                                type="object"-->
-                        <!--                                class="oe_stat_button"-->
-                        <!--                                icon="fa-usd"-->
-                        <!--                                help="show all the costs for this vehicle"-->
-                        <!--                                groups="fleet.fleet_group_manager">-->
-                        <!--                            <field name="cost_count" widget="statinfo" string="Costs"/>-->
-                        <!--                        </button>-->
-
                         <button type="object"
                                 name="show_so"
                                 class="oe_stat_button"
                                 icon="fa-usd">
                             <field name="so_count" widget="statinfo" string="Sale Order"/>
                         </button>
-
                         <button type="object"
                                 name="show_service"
                                 class="oe_stat_button"
                                 icon="fa-wrench" >
                             <field name="count" widget="statinfo" string="Repair Services"/>
                         </button>
-
-                        <!--                        <button name="return_action_to_open"-->
-                        <!--                                type="object"-->
-                        <!--                                class="oe_stat_button"-->
-                        <!--                                icon="fa-flask"-->
-                        <!--                                context="{'xml_id':'fleet_vehicle_log_fuel_action'}"-->
-                        <!--                                help="show the fuel logs for this vehicle" >-->
-                        <!--                            <field name="fuel_logs_count" widget="statinfo" string="Fuel"/>-->
-                        <!--                        </button>-->
-                        <!--                        <button name="return_action_to_open"-->
-                        <!--                                type="object"-->
-                        <!--                                class="oe_stat_button"-->
-                        <!--                                icon="fa-tachometer"-->
-                        <!--                                context="{'xml_id':'fleet_vehicle_odometer_action'}"-->
-                        <!--                                help="show the odometer logs for this vehicle" >-->
-                        <!--                            <field name="odometer_count" widget="statinfo" string="Odometer"/>-->
-                        <!--                        </button>-->
                     </div>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <field name="image_128" widget='image' class="oe_avatar"/>
@@ -209,19 +166,6 @@
                             <field name="active" invisible="1"/>
                             <field name="res_company" domain="[('is_company', '=', True)]"/>
                             <field name="driver_ids" widget="many2many_tags"/>
-<!--                            <field name="drivers_id"/>-->
-                            <!--                            <label for="future_driver_id"/>-->
-                            <!--                            <div class="o_row">-->
-                            <!--                                <field name="future_driver_id"/>-->
-                            <!--                                <button string="Apply Change"-->
-                            <!--                                        class="btn btn-primary"-->
-                            <!--                                        type="object"-->
-                            <!--                                        name="action_accept_driver_change"-->
-                            <!--                                        attrs="{'invisible': [('future_driver_id', '=', False)]}"/>-->
-                            <!--                            </div>-->
-                            <!--                            <field name="plan_to_change_car" groups="fleet.fleet_group_manager"/>-->
-                            <!--                            <field name="next_assignation_date"/>-->
-                            <!--                            <field name="location"/>-->
                         </group>
                         <group string="Vehicle">
                             <label for="odometer"/>
@@ -236,29 +180,10 @@
                             <field name="residual_value" widget="monetary"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
-                        <!--                        <group string="Contract">-->
-                        <!--                            <field name="manager_id"/>-->
-                        <!--                            <field name="first_contract_date"/>-->
-                        <!--                        </group>-->
-                        <!--                        <group string="Model">-->
-                        <!--                            <field name="seats"/>-->
-                        <!--                            <field name="doors"/>-->
-                        <!--                            <field name="color"/>-->
-                        <!--                            <field name="model_year"/>-->
-                        <!--                        </group>-->
+
                         <group string="Engine">
                             <field name="transmission"/>
                             <field name="fuel_type"/>
-                            <!--                            <label for="co2"/>-->
-                            <!--                            <div class="o_row" name="co2">-->
-                            <!--                                <field name="co2"/><span>g/km</span>-->
-                            <!--                            </div>-->
-                            <!--                            <field name="horsepower"/>-->
-                            <!--                            <field name="horsepower_tax" widget="monetary"/>-->
-                            <!--                            <label for="power"/>-->
-                            <!--                            <div class="o_row">-->
-                            <!--                                <field name="power"/><span>kW</span>-->
-                            <!--                            </div>-->
                         </group>
                     </group>
                 </sheet>

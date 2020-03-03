@@ -16,8 +16,6 @@
         </field>
     </record>
 
-
-
     <record id="view_repair_form" model="ir.ui.view">
         <field name="name">car.repair.form</field>
         <field name="model">car.repair</field>
@@ -54,7 +52,6 @@
                     <group>
                         <field name="subject" required="1"/>
                         <field name="receiving_tech" />
-                        <!--                        <field name="repair_count" invisible="1"/>-->
                     </group>
                     <group>
                         <field name="priority" widget="priority"/>
@@ -67,7 +64,6 @@
                     <page string="General" name="general">
                         <group>
                             <group string="Client Info" name="client_info">
-                                <!--                                <button type="object" icon="fa-pencil-square-o" name="action_view_partner_invoices" string="Test"/>-->
                                 <field name="client" domain="[('is_company', '=', True)]" required="1"/>
                                 <field name="contacts_name" attrs="{'invisible': [('client', '=', False)]}" domain="[('parent_id', '=', client)]"/>
                             </group>
@@ -75,7 +71,6 @@
                                 <field name="phone" />
                                 <field name="mobile" />
                                 <field name="email" />
-                                <!--                                <field name="contact_no" />-->
                             </group>
                         </group>
                     </page>
@@ -137,8 +132,6 @@
                                     <field name="part_line" >
                                         <tree editable="bottom" create="true" delete="true">
                                             <field name="part"/>
-                                            <!--                                            <field name="product_id"/>-->
-                                            <!--                                            <field name="product_template_id"/>-->
                                             <field name="part_qty" required="1"/>
                                         </tree>
                                     </field>
@@ -184,10 +177,8 @@
         <field name="priority">2</field>
         <field name="arch" type="xml">
             <tree string="Work Order">
-                <!--            <tree string="Work Order" create="false">-->
                 <field name="task_name" />
                 <field name="work_order" />
-                <!--                <field name="subject" />-->
                 <field name="receiving_tech" />
                 <field name="receipt_date" />
                 <field name="state" />
@@ -206,51 +197,15 @@
                     <button name="complete_task" type="object" string="Complete" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['in_progress'])]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="start,in_progress,completed"/>
                 </header>
-                <!--                <div class="oe_button_box" name="button_box">-->
-                <!--                    <button name="action_view_inventory_move"-->
-                <!--                            type="object"-->
-                <!--                            class="oe_stat_button" icon="fa-exchange"-->
-                <!--                            string="Inventory Move" attrs="{'invisible': [('state', 'not in', ['inventory_move'])]}">-->
-                <!--                    </button>-->
-                <!--                    <button name="action_view_work_order"-->
-                <!--                            type="object"-->
-                <!--                            class="oe_stat_button" icon="fa-briefcase"-->
-                <!--                            string="Work Order" attrs="{'invisible': [('state', 'not in', ['inventory_move','work_order'])]}">-->
-                <!--                    </button>-->
-                <!--                </div>-->
                 <group>
                     <group>
                         <field name="work_order" required="1"/>
-                        <!--                        <field name="subject" required="1"/>-->
                         <field name="receiving_tech" />
-                        <!--                        <field name="repair_count" invisible="1"/>-->
                     </group>
                     <group>
-                        <!--                        <field name="priority" widget="priority"/>-->
                         <field name="receipt_date" />
-                        <!--                        <field name="scheduled_service_date" />-->
-                        <!--                        <field name="rma_number" />-->
                     </group>
                 </group>
-                <!--                <notebook>-->
-                <!--                    <page string="General" name="general">-->
-                <!--                        <group>-->
-                <!--                            <group string="Client Info" name="client_info">-->
-                <!--                                <field name="client" required="1"/>-->
-                <!--                                <field name="contact_name" />-->
-                <!--                            </group>-->
-                <!--                            <group string="Contact">-->
-                <!--                                <field name="phone" />-->
-                <!--                                <field name="mobile" />-->
-                <!--                                <field name="email" />-->
-                <!--                                <field name="contact_no" />-->
-                <!--                            </group>-->
-                <!--                        </group>-->
-                <!--                    </page>-->
-                <!--                </notebook>-->
-                <!--                <group>-->
-                <!--                    <field name="description"/>-->
-                <!--                </group>-->
                 <notebook>
                     <page string="General Information" name="general_information">
                         <group string="Task">
@@ -263,12 +218,6 @@
                                 <field name="duration" />
                                 <field name="hour_worked" />
                             </group>
-                            <!--                                <tree editable="bottom" create="true" delete="true">-->
-                            <!--                                    <field name="task" />-->
-                            <!--                                    <field name="remark"/>-->
-                            <!--                                    <field name="document"/>-->
-                            <!--                                </tree>-->
-                            <!--                            </field>-->
                         </group>
                     </page>
                 </notebook>
@@ -293,8 +242,6 @@
         <field name="arch" type="xml">
             <tree string="Task">
                 <field name="name" />
-                <!--                <field name="remark" />-->
-                <!--                <field name="document" />-->
             </tree>
         </field>
     </record>
@@ -304,32 +251,11 @@
         <field name="model">task.name</field>
         <field name="arch" type="xml">
             <form>
-                <header>
-                    <!--                    <button name="start_task" type="object" string="Start" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['start'])]}"/>-->
-                    <!--                    <button name="complete_task" type="object" string="Complete" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['in_progress'])]}"/>-->
-                    <!--                    <field name="state" widget="statusbar" statusbar_visible="start,in_progress,completed"/>-->
-                </header>
                 <group>
                     <group>
                         <field name="name" required="1"/>
-                        <!--                        <field name="remark" />-->
-                        <!--                        <field name="document" />-->
-                    </group>
-                    <group>
-                        <!--                        <field name="receipt_date" />-->
                     </group>
                 </group>
-                <!--                <notebook>-->
-                <!--                    <page string="General Information" name="general_information">-->
-                <!--                        <group string="Task">-->
-                <!--                            <group>-->
-                <!--                                <field name="task_name" />-->
-                <!--                                <field name="start_time" />-->
-                <!--                                <field name="end_time" />-->
-                <!--                            </group>-->
-                <!--                        </group>-->
-                <!--                    </page>-->
-                <!--                </notebook>-->
             </form>
         </field>
     </record>
@@ -411,11 +337,6 @@
               parent="repair_menu_root"
               sequence="5"
               groups="repair_service.group_manager"/>
-
-    <!--        <menuitem id="menu_repair_config"-->
-    <!--            name="Configuration"-->
-    <!--            parent="repair_menu_root"-->
-    <!--            sequence="3"/>-->
 
     <!--                                End Of Menu Item                               -->
 
