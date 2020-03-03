@@ -75,6 +75,21 @@
                         </group>
                     </page>
                 </notebook>
+                <notebook>
+                    <page string="Work Orders" name="general">
+                        <group>
+                            <field name="work_order_ids" readonly="1">
+                                <tree editable="bottom">
+                                    <field name="task_name"/>
+                                    <field name="start_time"/>
+                                    <field name="end_time" />
+                                    <field name="hour_worked"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                </notebook>
                 <group>
                     <field name="description"/>
                 </group>

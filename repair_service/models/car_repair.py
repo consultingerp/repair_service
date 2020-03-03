@@ -35,12 +35,10 @@ class CarRepair(models.Model):
     def _default_employee(self):
         return self.env.context.get('default_employee_id') or self.env['hr.employee'].search(
             [('user_id', '=', self.env.uid)], limit=1)
-
     state = fields.Selection([('diagnosis', 'Car Diagnosis'), ('send_quotation', 'Send Quotation'),
                               ('inventory_move', 'Inventory Move'), ('work_order', 'Work Order'),
                               ('inspections', 'Inspections'), ('invoice', 'Invoice')],
                              'Status', readonly=True, default='diagnosis')
-
     subject = fields.Char(string='Subject')
     # receiving_tech = fields.Many2one('hr.employee', string='Receiving Technician',  default=lambda self: self.env.user)
     receiving_tech = fields.Many2one('hr.employee', string='Receiving Technician', default=_default_employee)
@@ -50,35 +48,24 @@ class CarRepair(models.Model):
     receipt_date = fields.Date(string='Date Of Receipt', default=lambda self: fields.Datetime.now())
     scheduled_service_date = fields.Date(string='Scheduled Service Date')
     rma_number = fields.Integer(string='RMA Number')
-
     client = fields.Many2one('res.partner', string='Client')
     contacts_name = fields.Many2one('res.partner', string='Contact Name')
     email = fields.Char(string='Email')
     phone = fields.Char(string='Phone')
     mobile = fields.Char(string='Mobile')
     contact_no = fields.Char(string='Contact No')
-
     description = fields.Text('Note')
-
     multi_image = fields.Many2many('repair.image', string='Images')
-
     note = fields.Text(string='Descriptions/Remark')
     multi_select = fields.Many2many('faults.config', string='Multi Select Faults')
-
     digital_signature = fields.Binary('Signature')
-
     task_line = fields.One2many('repair.task.line', 'repair_id')
-
     part_line = fields.One2many('repair.part.line', 'part_line')
-
     service_line = fields.One2many('repair.service.line', 'service_line')
-
     assign_technicians = fields.Many2many('hr.employee', string='Technicians')
-
     sale_order_id = fields.Char('Sale Order ID')
-
     work_order_id = fields.Char('Work Order Id')
-
+    work_order_ids = fields.One2many('work.order', 'work_order', 'Work Orders')
     # repair_count = fields.Integer(compute='_compute_repair_count', string='Repair Count')
 
     # d = fields.Binary(compute='_compute_image',string='Repair Im')
@@ -247,9 +234,28 @@ class CarRepair(models.Model):
         #             'subtype_id': self.env['mail.message.subtype'].search([('name', '=', 'Discussions')]).id,
         #             # 'partner_ids': [(6, 0, [self.env['res.partner'].search([('name','=',i.name)]).id])],
         #             'channel_ids': [(6, 0, li)],
-        #         })
+        # #         })
+        # view_id =
+        # return {
+        #     'name': 'Sales Order',
+        #     'view_type': 'form',
+        #     'view_mode': 'form',
+        #     'views': [(view_id, 'form')],
+        #     'res_model': 'sale.order',
+        #     'view_id': view_id,
+        #     'type': 'ir.actions.act_window',
+        #     'res_id': sale_order.id,
+        #     'target': 'current'}
 
-        return True
+        return {
+            'name': 'Sale Order',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'sale.order',
+            'res_id': sale_order.id,
+            'target': 'current',
+        }
 
     def action_view_partner_invoices(self):
         for i in self.assign_technicians:
@@ -425,19 +431,13 @@ class WorkOrder(models.Model):
     _name = "work.order"
     _description = "Work Order"
     _order = 'id desc'
-    # _check_company_auto = True
 
     state = fields.Selection([('start', 'Start'), ('in_progress', 'In Progress'),
                               ('completed', 'Completed'), ('pause', 'Pause'), ('cancel', 'Cancel Task')],
                              'Status', readonly=True, default='start')
-
     work_order = fields.Many2one('car.repair', string='Repair Order')
-
-    # subject = fields.Char(string='Subject')
     receiving_tech = fields.Many2one('hr.employee', string='Receiving Technician')
-
     receipt_date = fields.Date(string='Date Of Receipt', default=lambda self: fields.Datetime.now())
-
     start_time = fields.Datetime(string='Start Time')
     end_time = fields.Datetime(string='End Time')
     duration = fields.Char(string='Duration')
