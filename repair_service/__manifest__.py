@@ -22,7 +22,7 @@ This module will create Car Diagnosis and Assign Technicians for it.
         # 'data/product_product_demo.xml',
     ],
     'qweb': [
-        'static/src/xml/digital_sign.xml',
+        # "static/src/xml/digital_sign.xml",
     ],
     'installable': True,
     'auto_install': False
