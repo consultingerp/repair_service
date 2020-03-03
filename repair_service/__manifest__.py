@@ -15,7 +15,7 @@ This module will create Car Diagnosis and Assign Technicians for it.
         'security/ir.model.access.csv',
         'views/car_repair_view.xml',
         'views/vehicle_form.xml',
-        'views/digital_sign_view.xml',
+        # 'views/digital_sign_view.xml',
     ],
     'demo': [
         # 'data/sale_demo.xml',
