@@ -206,7 +206,7 @@ class StockPickingRepair(models.Model):
                     'receiving_tech': repair_task.repair_id.receiving_tech.id,
                     'task_name': repair_task.task.name
                 })
-        # return True
+        return res
 
     # def set_so_count(self):
     #     search_res_id = self.env['sale.order'].search([('partner_id','=',self.driver_id.id),
