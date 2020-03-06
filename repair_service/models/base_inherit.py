@@ -54,7 +54,6 @@ class Partner_inherit(models.Model):
     is_vendos = fields.Boolean('Is Vendor')
     count = fields.Integer('Vehicles', compute='set_count')
 
-
     @api.model_create_multi
     def create(self, vals_list):
         res = super(Partner_inherit, self).create(vals_list)
@@ -97,8 +96,8 @@ class Partner_inherit(models.Model):
 class FleetVehicles(models.Model):
     _inherit = 'fleet.vehicle'
 
-    count = fields.Integer('Services', compute='set_count')
-    so_count = fields.Integer('Services', compute='set_so_count')
+    repair_count = fields.Integer('Repair Count', compute='_repair_count')
+    sale_count = fields.Integer('Sale Order Count', compute='_sale_order_count')
     res_company = fields.Many2one('res.partner', string="Company")
     driver_ids = fields.Many2many('res.partner', 'rel_partner_fleet', 'fleet_id', 'partner_id', "Drivers")
     repair_ids = fields.Many2many('car.repair', 'rel_carrepair_fleet', 'fleet_id', 'car_id', "Repair Service ID")
@@ -109,24 +108,66 @@ class FleetVehicles(models.Model):
             result.append((record.id, '%s' % record.license_plate))
         return result
 
-    # ........................................... Function for Sales Order Button .......................................
+    def _repair_count(self):
+        if self.repair_ids:
+            for record in self.repair_ids:
+                repair_search = self.env['car.repair'].search([('subject', '=', record.display_name)])
+                if repair_search:
+                    self.repair_count = len(self.repair_ids)
+        else:
+            self.repair_count = 00
 
-    def action_view_sale_order(self):
-        repair_id = self.env['car.repair'].search([('subject', '=', self.repair_id.subject)])
+    def _sale_order_count(self):
+        sale_vals = []
+        if self.repair_ids:
+            for record in self.repair_ids:
+                repair_search = self.env['car.repair'].search([('subject', '=', record.display_name)])
+                for rec in repair_search:
+                    sale_order = self.env['sale.order'].search([('repair_id', '=', rec.id)])
+                    if sale_order:
+                        sale_vals.append(sale_order.id)
+                        self.sale_count = len(sale_vals)
+        else:
+            self.sale_count = 00
+
+    def action_repair_service(self):
+        vals = []
+        for record in self.repair_ids:
+            repair_search = self.env['car.repair'].search([('subject', '=', record.display_name)])
+            for car_id in repair_search:
+                vals.append(car_id.id)
+                self.repair_count = len(self.repair_ids)
+
         res = {
-            'name': 'Sale Order',
+            'name': 'Repair Services',
             'type': 'ir.actions.act_window',
             'view_type': 'form',
-            'view_mode': 'form',
-            'res_model': 'sale.order',
-            'res_id': sale_order_id.id,
+            'view_mode': 'tree,form',
+            'res_model': 'car.repair',
+            'domain': [('id', '=', vals)],
             'target': 'current',
         }
         return res
 
-        # ............................................. End of Function for Sales Order Button ..............................
+    def action_sale_order(self):
+        sale_vals = []
+        for record in self.repair_ids:
+            repair_search = self.env['car.repair'].search([('subject', '=', record.display_name)])
+            for rec in repair_search:
+                sale_order = self.env['sale.order'].search([('repair_id', '=', rec.id)])
+                sale_vals.append(sale_order.id)
+                self.sale_count = len(sale_vals)
 
-        # ........................................... Function for Invoice Button .......................................
+        res = {
+            'name': 'Sale Order',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'sale.order',
+            'domain': [('id', '=', sale_vals)],
+            'target': 'current',
+        }
+        return res
 
     def action_view_invoices(self):
         sale_order_id = self.env['sale.order'].search([('name', '=', self.sale_order_id)])
@@ -147,8 +188,6 @@ class FleetVehicles(models.Model):
         }
         return res
 
-        # ............................................. End of Function for Invoice Button ..............................
-
     @api.onchange('res_company')
     def on_change_company_driver(self):
         if self.res_company:
@@ -158,9 +197,9 @@ class FleetVehicles(models.Model):
         else:
             return
 
-    def set_count(self):
-        search_res_id = self.env['car.repair'].search([('client', '=', self.driver_id.id)])
-        self.count = len(search_res_id)
+    # def set_count(self):
+    #     search_res_id = self.env['car.repair'].search([('client', '=', self.driver_id.id)])
+    #     self.count = len(search_res_id)
 
     def show_service(self):
         context = dict(self.env.context)
@@ -182,14 +221,14 @@ class FleetVehicles(models.Model):
 
         }
 
-    def set_so_count(self):
-        search_res_id = self.env['sale.order'].search([('partner_id', '=', self.driver_id.id),
-                                                       ('repair_id.client', '=', self.driver_id.id)])
-        self.so_count = len(search_res_id)
+    # def set_so_count(self):
+    #     search_res_id = self.env['sale.order'].search([('partner_id', '=', self.driver_id.id),
+    #                                                    ('repair_id.client', '=', self.driver_id.id)])
+    #     self.so_count = len(search_res_id)
 
     def show_so(self):
         return {
-            'name': ('Sale Orders'),
+            'name': 'Sale Orders',
             'type': 'ir.actions.act_window',
             'view_type': 'form',
             'view_mode': 'tree,form',
