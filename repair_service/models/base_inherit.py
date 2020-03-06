@@ -50,15 +50,11 @@ class Partner_inherit(models.Model):
     _inherit = 'res.partner'
 
     # res_aprt = fields.Many2one('res.partner', string='Driver Name')
-
     drive = fields.Many2many('res.partner', 'res_partner_rel', 'count', 'name', string=' ')
     # drive = fields.One2many('res.partner','res_aprt',string=' ')
     # drive = fields.Many2many('res.partner', string='Drivers Name')
-
     driver_bool = fields.Boolean('Driver')
-
     is_vendos = fields.Boolean('Is Vendor')
-
     count = fields.Integer('Vehicles', compute='set_count')
 
     # repair_count=fields.Integer('Repair Services',compute='set_repair_count')
@@ -122,15 +118,66 @@ class Partner_inherit(models.Model):
 class FleetVehicles(models.Model):
     _inherit = 'fleet.vehicle'
 
+
     count = fields.Integer('Services', compute='set_count')
     so_count = fields.Integer('Services', compute='set_so_count')
     res_company = fields.Many2one('res.partner', string="Company")
     driver_ids = fields.Many2many('res.partner', 'rel_partner_fleet', 'fleet_id', 'partner_id', "Drivers")
+    repair_ids = fields.Many2many('car.repair', 'rel_carrepair_fleet', 'fleet_id', 'car_id', "Repair Service ID")
+
+    # repair_service_id = fields.Many2one('car.repair', string='Repair ID')
+
+    def name_get(self):
+        result = []
+        for record in self:
+            result.append((record.id, '%s' % record.license_plate))
+        return result
+
+    # ........................................... Function for Sales Order Button .......................................
+
+    def action_view_sale_order(self):
+        repair_id = self.env['car.repair'].search([('subject', '=', self.repair_id.subject)])
+        res = {
+            'name': 'Sale Order',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'sale.order',
+            'res_id': sale_order_id.id,
+            'target': 'current',
+        }
+        return res
+
+        # ............................................. End of Function for Sales Order Button ..............................
+
+        # ........................................... Function for Invoice Button .......................................
+
+    def action_view_invoices(self):
+        sale_order_id = self.env['sale.order'].search([('name', '=', self.sale_order_id)])
+        account_inv = self.env['account.move'].search([('invoice_origin', '=', sale_order_id.name)])
+        vals = []
+        if account_inv:
+            for rec in account_inv:
+                vals.append(rec.id)
+
+        res = {
+            'name': 'Account Invoice',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'account.move',
+            'domain': [('id', '=', vals)],
+            'target': 'current',
+        }
+        return res
+
+        # ............................................. End of Function for Invoice Button ..............................
 
     @api.onchange('res_company')
     def on_change_company_driver(self):
         if self.res_company:
-            search_driver = self.env['res.partner'].search([('parent_id', '=', self.res_company.id), ('driver_bool', '=', True)])
+            search_driver = self.env['res.partner'].search(
+                [('parent_id', '=', self.res_company.id), ('driver_bool', '=', True)])
             return {'domain': {'driver_ids': [('id', 'in', search_driver.ids)]}}
         else:
             return

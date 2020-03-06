@@ -167,6 +167,11 @@
                             <field name="res_company" domain="[('is_company', '=', True)]"/>
                             <field name="driver_ids" widget="many2many_tags"/>
                         </group>
+
+                        <group string="Repiar Service">
+                            <field name="repair_ids" widget="many2many_tags"/>
+                        </group>
+
                         <group string="Vehicle">
                             <label for="odometer"/>
                             <div class="o_row">

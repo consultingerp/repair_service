@@ -9,3 +9,4 @@ access_service_name,service_name,model_service_name,repair_service.group_user,1,
 access_repair_image,repair_image,model_repair_image,repair_service.group_user,1,1,1,1
 access_work_order,work_order,model_work_order,repair_service.group_user,1,1,1,1
 access_faults_config,faults_config,model_faults_config,repair_service.group_user,1,1,1,1
+access_license_plate,license.plate,model_license_plate,repair_service.group_user,1,1,1,1

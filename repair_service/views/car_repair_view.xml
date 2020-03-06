@@ -52,6 +52,8 @@
                     <group>
                         <field name="subject" required="1"/>
                         <field name="receiving_tech" />
+                        <field name="vehicle_id" required="1"/>
+                        <field name="vehicle_license_no"/>
                     </group>
                     <group>
                         <field name="priority" widget="priority"/>

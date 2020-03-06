@@ -24,6 +24,14 @@ class FaultsConfiguration(models.Model):
     faults_name = fields.Char("Faults")
 
 
+class LicensePlate(models.Model):
+    _name = 'license.plate'
+    _rec_name = 'vehicle_license_plate'
+
+    vehicle_model_id = fields.Char('Model ID')
+    vehicle_license_plate = fields.Char(string='License Plate')
+
+
 class CarRepair(models.Model):
     _name = "car.repair"
     _inherit = ['mail.thread']
@@ -35,12 +43,12 @@ class CarRepair(models.Model):
     def _default_employee(self):
         return self.env.context.get('default_employee_id') or self.env['hr.employee'].search(
             [('user_id', '=', self.env.uid)], limit=1)
+
     state = fields.Selection([('diagnosis', 'Car Diagnosis'), ('send_quotation', 'Send Quotation'),
                               ('inventory_move', 'Inventory Move'), ('work_order', 'Work Order'),
                               ('inspections', 'Inspections'), ('invoice', 'Invoice')],
                              'Status', readonly=True, default='diagnosis')
     subject = fields.Char(string='Subject')
-    # receiving_tech = fields.Many2one('hr.employee', string='Receiving Technician',  default=lambda self: self.env.user)
     receiving_tech = fields.Many2one('hr.employee', string='Receiving Technician', default=_default_employee)
     priority = fields.Selection([('0', 'Not urgent'), ('1', 'Normal'), ('2', 'Urgent'), ('3', 'Very Urgent')],
                                 'Priority',
@@ -66,6 +74,9 @@ class CarRepair(models.Model):
     sale_order_id = fields.Char('Sale Order ID')
     work_order_id = fields.Char('Work Order Id')
     work_order_ids = fields.One2many('work.order', 'work_order', 'Work Orders')
+    vehicle_id = fields.Many2one('fleet.vehicle.model', string='Model')
+    vehicle_license_no = fields.Many2one('fleet.vehicle', string='License Plate')
+
     # repair_count = fields.Integer(compute='_compute_repair_count', string='Repair Count')
 
     # d = fields.Binary(compute='_compute_image',string='Repair Im')
@@ -79,6 +90,33 @@ class CarRepair(models.Model):
     #     for employee in self:
     #         employee.repair_count = len(employee.id)
     #         a=10
+
+    @api.model
+    def create(self, vals):
+        result = super(CarRepair, self).create(vals)
+        vehicle = self.env['fleet.vehicle'].search([('license_plate', '=', result.vehicle_license_no.display_name)])
+        if vehicle:
+            vehicle.write({'repair_ids': [(4, result.id)]})
+            self._cr.commit()
+        return result
+
+    @api.onchange('vehicle_id')
+    def _get_licence_plate(self):
+        """
+        It will get the licence plate depending upon the vehicle model.
+        """
+        license_list = []
+        license_search = self.env['fleet.vehicle'].search([('model_id', '=', self.vehicle_id.id)])
+        for license in license_search:
+            license_list.append(license.id)
+
+        return {'domain':{'vehicle_license_no': [('id', 'in', license_list)]}}
+
+        # existing = self.env['license.plate'].search([('vehicle_license_plate', '=', plate.vehicle_license_plate)])
+        # if not existing:
+        #     for plate_no in plate:
+        #         self.write({'vehicle_license_no': plate_no.id})
+
 
     @api.onchange('contacts_name')
     def _compute_client_info(self):
