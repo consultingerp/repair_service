@@ -98,9 +98,10 @@ class FleetVehicles(models.Model):
 
     repair_count = fields.Integer('Repair Count', compute='_repair_count')
     sale_count = fields.Integer('Sale Order Count', compute='_sale_order_count')
+    inv_count = fields.Integer('Invoice Count', compute='_count_invoices')
     res_company = fields.Many2one('res.partner', string="Company")
     driver_ids = fields.Many2many('res.partner', 'rel_partner_fleet', 'fleet_id', 'partner_id', "Drivers")
-    repair_ids = fields.Many2many('car.repair', 'rel_carrepair_fleet', 'fleet_id', 'car_id', "Repair Service ID")
+    repair_ids = fields.Many2many('car.repair', 'rel_carrepair_fleet', 'fleet_id', 'car_id', "Repair Service ID", store=True, readonly=True)
 
     def name_get(self):
         result = []
@@ -114,6 +115,8 @@ class FleetVehicles(models.Model):
                 repair_search = self.env['car.repair'].search([('subject', '=', record.display_name)])
                 if repair_search:
                     self.repair_count = len(self.repair_ids)
+                else:
+                    self.repair_count = 00
         else:
             self.repair_count = 00
 
@@ -127,8 +130,31 @@ class FleetVehicles(models.Model):
                     if sale_order:
                         sale_vals.append(sale_order.id)
                         self.sale_count = len(sale_vals)
+                    else:
+                        self.sale_count = 00
         else:
             self.sale_count = 00
+
+    def _count_invoices(self):
+        vals = []
+        if self.repair_ids:
+            for record in self.repair_ids:
+                repair_search = self.env['car.repair'].search([('subject', '=', record.display_name)])
+                for rec in repair_search:
+                    sale_order = self.env['sale.order'].search([('repair_id', '=', rec.id)])
+                    if sale_order:
+                        for recs in sale_order:
+                            account_inv = self.env['account.move'].search([('invoice_origin', '=', recs.name)])
+                            if account_inv:
+                                for records in account_inv:
+                                    vals.append(records.id)
+                                self.inv_count = len(vals)
+                            else:
+                                self.inv_count = 00
+                    else:
+                        self.inv_count = 00
+        else:
+            self.inv_count = 00
 
     def action_repair_service(self):
         vals = []
@@ -170,12 +196,24 @@ class FleetVehicles(models.Model):
         return res
 
     def action_view_invoices(self):
-        sale_order_id = self.env['sale.order'].search([('name', '=', self.sale_order_id)])
-        account_inv = self.env['account.move'].search([('invoice_origin', '=', sale_order_id.name)])
         vals = []
-        if account_inv:
-            for rec in account_inv:
-                vals.append(rec.id)
+        if self.repair_ids:
+            for record in self.repair_ids:
+                repair_search = self.env['car.repair'].search([('subject', '=', record.display_name)])
+                for rec in repair_search:
+                    sale_order = self.env['sale.order'].search([('repair_id', '=', rec.id)])
+                    if sale_order:
+                        for recs in sale_order:
+                            account_inv = self.env['account.move'].search([('invoice_origin', '=', recs.name)])
+                            if account_inv:
+                                for records in account_inv:
+                                    vals.append(records.id)
+                            else:
+                                self.inv_count = 00
+                    else:
+                        self.inv_count = 00
+        else:
+            self.inv_count = 00
 
         res = {
             'name': 'Account Invoice',

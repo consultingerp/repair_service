@@ -135,16 +135,22 @@
                             <field name="history_count" widget="statinfo" string="Drivers History"/>
                         </button>
                         <button type="object"
+                                name="action_repair_service"
+                                class="oe_stat_button"
+                                icon="fa-wrench" >
+                            <field name="repair_count" widget="statinfo" string="Services"/>
+                        </button>
+                        <button type="object"
                                 name="action_sale_order"
                                 class="oe_stat_button"
                                 icon="fa-usd">
                             <field name="sale_count" widget="statinfo" string="Sale Order"/>
                         </button>
-                        <button type="object"
-                                name="action_repair_service"
+                        <button name="action_view_invoices"
+                                type="object"
                                 class="oe_stat_button"
-                                icon="fa-wrench" >
-                            <field name="repair_count" widget="statinfo" string="Repair Services"/>
+                                icon="fa-file-invoice">
+                            <field name="inv_count" widget="statinfo" string="Invoices"/>
                         </button>
                     </div>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
