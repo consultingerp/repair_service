@@ -63,7 +63,10 @@ class CarRepair(models.Model):
     mobile = fields.Char(string='Mobile')
     contact_no = fields.Char(string='Contact No')
     description = fields.Text('Note')
-    multi_image = fields.Many2many('repair.image', string='Images')
+    # multi_image = fields.Many2many('repair.image', string='Images')
+    multi_image = fields.Many2many(comodel_name="ir.attachment", relation="m2m_ir_attachment_relation",
+                                   column1="m2m_id", column2="attachment_id", string="Images")
+    image_name = fields.Char('Image Name')
     note = fields.Text(string='Descriptions/Remark')
     multi_select = fields.Many2many('faults.config', string='Multi Select Faults')
     digital_signature = fields.Binary('Signature')
@@ -76,20 +79,6 @@ class CarRepair(models.Model):
     work_order_ids = fields.One2many('work.order', 'work_order', 'Work Orders')
     vehicle_id = fields.Many2one('fleet.vehicle.model', string='Model')
     vehicle_license_no = fields.Many2one('fleet.vehicle', string='License Plate')
-
-    # repair_count = fields.Integer(compute='_compute_repair_count', string='Repair Count')
-
-    # d = fields.Binary(compute='_compute_image',string='Repair Im')
-
-    # def _compute_image(self):
-    #     for employee in self:
-    #         if employee.multi_image.tp:
-    #             employee.d = employee.multi_image.tp
-
-    # def _compute_repair_count(self):
-    #     for employee in self:
-    #         employee.repair_count = len(employee.id)
-    #         a=10
 
     @api.model
     def create(self, vals):
@@ -110,13 +99,7 @@ class CarRepair(models.Model):
         for license in license_search:
             license_list.append(license.id)
 
-        return {'domain':{'vehicle_license_no': [('id', 'in', license_list)]}}
-
-        # existing = self.env['license.plate'].search([('vehicle_license_plate', '=', plate.vehicle_license_plate)])
-        # if not existing:
-        #     for plate_no in plate:
-        #         self.write({'vehicle_license_no': plate_no.id})
-
+        return {'domain': {'vehicle_license_no': [('id', 'in', license_list)]}}
 
     @api.onchange('contacts_name')
     def _compute_client_info(self):
@@ -240,6 +223,15 @@ class CarRepair(models.Model):
             sales_order_line.append(orders_line.id)
         sale_order.write({'order_line': [(6, 0, sales_order_line)]})
         self.update({'state': 'send_quotation', 'sale_order_id': sale_order.name})
+        return {
+            'name': 'Sale Order',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'sale.order',
+            'res_id': sale_order.id,
+            'target': 'current',
+        }
 
         # for i in self.assign_technicians:
         #     partner = self.env['hr.employee'].search([('id','=',i.id)])
@@ -284,16 +276,6 @@ class CarRepair(models.Model):
         #     'type': 'ir.actions.act_window',
         #     'res_id': sale_order.id,
         #     'target': 'current'}
-
-        return {
-            'name': 'Sale Order',
-            'type': 'ir.actions.act_window',
-            'view_type': 'form',
-            'view_mode': 'form',
-            'res_model': 'sale.order',
-            'res_id': sale_order.id,
-            'target': 'current',
-        }
 
     def action_view_partner_invoices(self):
         for i in self.assign_technicians:
@@ -350,23 +332,11 @@ class RepairTaskLine(models.Model):
     _order = 'id desc'
     _check_company_auto = True
 
-    # image = fields.Binary('Image Field')
-
     remark = fields.Char('Remark')
     document = fields.Binary('Document')
     file_name = fields.Char('Doc Name')
     repair_id = fields.Many2one('car.repair', 'Repair ID')
     task = fields.Many2one('task.name', 'Task')
-
-    def download_files(self):
-        a = 10
-        doc = self.document
-        return self.document
-        # return {
-        #     'type': 'ir.actions.act_url',
-        #     'target': 'self',
-        #     'url': self.document,
-        # }
 
 
 # ................................End of  Class Repair Task List .......................................................
@@ -446,8 +416,6 @@ class ServiceName(models.Model):
 class RepairImage(models.Model):
     _name = "repair.image"
     _description = "Repair Image"
-    # _order = 'id desc'
-    # _check_company_auto = True
 
     image = fields.Binary('Select Image')
     fname = fields.Char(string="File Name")

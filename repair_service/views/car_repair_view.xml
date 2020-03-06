@@ -99,25 +99,25 @@
                     <page string="Diagnosis Information" name="diagnosis_information">
                         <group string="Contact">
                             <group>
-                                <field name="multi_image" mode="kanban" widget="many2many">
-                                    <kanban class="o_res_partner_kanban">
-                                        <templates>
-                                            <field name="image" />
-                                            <t t-name="kanban-box">
-                                                <div class="oe_kanban_global_click" style="border:0px solid transparent;">
-                                                    <div class="oe_kanban_global_click" style="height:200px;width:250px; max-width: 400px;">
-                                                        <a t-if="!read_only_mode" type="delete" class="fa fa-times pull-right"/>
-                                                        <div class="o_kanban_image " style="box-shadow: 25px 25px 100px #888888;">
-                                                            <img t-if="record.image.raw_value" t-att-src="'data:image/png;base64,'+record.image.raw_value" style="height:150px;width:400px; max-width: 600px;"/>
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <span t-if="record.image.raw_value" style="font-size: 20px; font-weight: bold;"><field name="remark"/></span>
-                                                    </div>
-                                                </div>
-                                            </t>
-                                        </templates>
-                                    </kanban>
+                                <field name="multi_image" filename="image_name" widget="many2many_binary">
+<!--                                    <kanban class="o_res_partner_kanban">-->
+<!--                                        <templates>-->
+<!--                                            <field name="image" />-->
+<!--                                            <t t-name="kanban-box">-->
+<!--                                                <div class="oe_kanban_global_click" style="border:0px solid transparent;">-->
+<!--                                                    <div class="oe_kanban_global_click" style="height:200px;width:250px; max-width: 400px;">-->
+<!--                                                        <a t-if="!read_only_mode" type="delete" class="fa fa-times pull-right"/>-->
+<!--                                                        <div class="o_kanban_image " style="box-shadow: 25px 25px 100px #888888;">-->
+<!--                                                            <img t-if="record.image.raw_value" t-att-src="'data:image/png;base64,'+record.image.raw_value" style="height:150px;width:400px; max-width: 600px;"/>-->
+<!--                                                        </div>-->
+<!--                                                    </div>-->
+<!--                                                    <div>-->
+<!--                                                        <span t-if="record.image.raw_value" style="font-size: 20px; font-weight: bold;"><field name="remark"/></span>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                            </t>-->
+<!--                                        </templates>-->
+<!--                                    </kanban>-->
                                 </field>
                                 <field name="note" />
                             </group>
