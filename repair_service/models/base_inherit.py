@@ -101,7 +101,8 @@ class FleetVehicles(models.Model):
     inv_count = fields.Integer('Invoice Count', compute='_count_invoices')
     res_company = fields.Many2one('res.partner', string="Company")
     driver_ids = fields.Many2many('res.partner', 'rel_partner_fleet', 'fleet_id', 'partner_id', "Drivers")
-    repair_ids = fields.Many2many('car.repair', 'rel_carrepair_fleet', 'fleet_id', 'car_id', "Repair Service ID", store=True, readonly=True)
+    repair_ids = fields.Many2many('car.repair', 'rel_carrepair_fleet', 'fleet_id', 'car_id', "Repair Service ID",
+                                  store=True, readonly=True)
 
     def name_get(self):
         result = []
@@ -295,13 +296,16 @@ class StockPickingRepair(models.Model):
                 work_obj = self.env['work.order'].sudo().create({
                     'work_order': repair_task.repair_id.id,
                     'receiving_tech': repair_task.repair_id.receiving_tech.id,
-                    'task_name': repair_task.task.name
+                    'task_name': repair_task.task.name,
+                    'client_name': car_repair.client.id,
+                    'client_contacts_name': car_repair.contacts_name.id,
+                    'remarks': repair_task.remark
                 })
         return res
 
     def show_so(self):
         return {
-            'name': ('Repair Services'),
+            'name': 'Repair Services',
             'type': 'ir.actions.act_window',
             'view_type': 'form',
             'view_mode': 'tree,form',

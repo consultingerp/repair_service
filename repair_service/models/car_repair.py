@@ -448,8 +448,10 @@ class WorkOrder(models.Model):
     end_time = fields.Datetime(string='End Time')
     duration = fields.Char(string='Duration')
     hour_worked = fields.Char(string='Hour Worked')
-
     task_name = fields.Char('Task')
+    client_name = fields.Many2one('res.partner', 'Client Name')
+    client_contacts_name = fields.Many2one('res.partner', 'Contact Name')
+    remarks = fields.Char('Remarks')
 
     def start_task(self):
         current_time = datetime.today()

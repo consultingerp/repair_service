@@ -220,6 +220,8 @@
                         <field name="receiving_tech" />
                     </group>
                     <group>
+                        <field name="client_name" readonly="1"/>
+                        <field name="client_contacts_name" readonly="1"/>
                         <field name="receipt_date" />
                     </group>
                 </group>
@@ -232,6 +234,7 @@
                                 <field name="end_time" />
                             </group>
                             <group>
+                                <field name="remarks" />
                                 <field name="duration" />
                                 <field name="hour_worked" />
                             </group>
