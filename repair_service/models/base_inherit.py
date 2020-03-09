@@ -236,10 +236,6 @@ class FleetVehicles(models.Model):
         else:
             return
 
-    # def set_count(self):
-    #     search_res_id = self.env['car.repair'].search([('client', '=', self.driver_id.id)])
-    #     self.count = len(search_res_id)
-
     def show_service(self):
         context = dict(self.env.context)
         context.update({
@@ -259,11 +255,6 @@ class FleetVehicles(models.Model):
             "context": context
 
         }
-
-    # def set_so_count(self):
-    #     search_res_id = self.env['sale.order'].search([('partner_id', '=', self.driver_id.id),
-    #                                                    ('repair_id.client', '=', self.driver_id.id)])
-    #     self.so_count = len(search_res_id)
 
     def show_so(self):
         return {
@@ -311,6 +302,23 @@ class StockPickingRepair(models.Model):
             'view_mode': 'tree,form',
             'res_model': 'sale.order',
             'domain': [('partner_id', '=', self.driver_id.id), ('repair_id.client', '=', self.driver_id.id)]
+        }
+
+    def view_work_orders(self):
+
+        vals = []
+        car_repair = self.env['car.repair'].sudo().search([('id', '=', self.car_obj.id)])
+        if car_repair:
+            for records in car_repair:
+                vals.append(records.id)
+
+        return {
+            'name': 'Work Orders',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'work.order',
+            'domain': [('id', '=', vals)]
         }
 
 # ................................ End Of Class Inheriting Stock Picking Modules .......................................
