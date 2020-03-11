@@ -171,9 +171,15 @@
                         <h2>
                             <field name="license_plate" class="oe_inline" placeholder="e.g. PAE 326"/>
                         </h2>
+                        <label for="customer" class="oe_edit_only"/>
+                        <h3>
+                            <field name="customer" domain="[('is_company', '=', False)]"/>
+                        </h3>
                         <label for="tag_ids" class="oe_edit_only"/>
                         <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
+
                     </div>
+
                     <group col="2">
                         <group string="Driver">
                             <field name="active" invisible="1"/>

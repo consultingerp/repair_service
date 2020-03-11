@@ -63,7 +63,7 @@ class CarRepair(models.Model):
     mobile = fields.Char(string='Mobile')
     contact_no = fields.Char(string='Contact No')
     description = fields.Text('Note')
-    # multi_image = fields.Many2many('repair.image', string='Images')
+    multi_images = fields.Many2many('repair.image', string='Images')
     multi_image = fields.Many2many(comodel_name="ir.attachment", relation="m2m_ir_attachment_relation",
                                    column1="m2m_id", column2="attachment_id", string="Images")
     image_name = fields.Char('Image Name')
@@ -447,7 +447,7 @@ class WorkOrder(models.Model):
     start_time = fields.Datetime(string='Start Time')
     end_time = fields.Datetime(string='End Time')
     duration = fields.Char(string='Duration')
-    hour_worked = fields.Char(string='Hour Worked')
+    hour_worked = fields.Float(string='Hours Worked')
     task_name = fields.Char('Task')
     client_name = fields.Many2one('res.partner', 'Client Name')
     client_contacts_name = fields.Many2one('res.partner', 'Contact Name')
@@ -462,12 +462,14 @@ class WorkOrder(models.Model):
         complete_time = datetime.today()
 
         dur = (datetime.today() - self.start_time)
-        duration = dur.seconds // 3600
+        date_to_sec = ((dur.days * 24) * 60) * 60
+        sec = date_to_sec + dur.seconds
+        sec_to_hours = (sec / 60) / 60
 
         minutes = dur.seconds / 60
         min = round(minutes, 2)
 
-        self.update({'state': 'completed', 'end_time': complete_time, 'duration': dur, 'hour_worked': duration})
+        self.update({'state': 'completed', 'end_time': complete_time, 'duration': dur, 'hour_worked': "%.2f" % sec_to_hours})
 
         work_count = self.env['work.order'].search_count([('work_order', '=', self.work_order.id)])
 

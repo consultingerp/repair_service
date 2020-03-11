@@ -75,7 +75,7 @@ class Partner_inherit(models.Model):
         }
 
     def set_count(self):
-        search_res_id = self.env['fleet.vehicle'].search([('driver_id', '=', self.id)])
+        search_res_id = self.env['fleet.vehicle'].search([('customer', '=', self.id)])
         self.count = len(search_res_id)
 
     def show_vehicles(self):
@@ -85,7 +85,7 @@ class Partner_inherit(models.Model):
             'view_type': 'form',
             'view_mode': 'tree,form',
             'res_model': 'fleet.vehicle',
-            'domain': [('driver_id', '=', self.id)]
+            'domain': [('customer', '=', self.id)]
         }
 
 
@@ -103,12 +103,13 @@ class FleetVehicles(models.Model):
     driver_ids = fields.Many2many('res.partner', 'rel_partner_fleet', 'fleet_id', 'partner_id', "Drivers")
     repair_ids = fields.Many2many('car.repair', 'rel_carrepair_fleet', 'fleet_id', 'car_id', "Repair Service ID",
                                   store=True, readonly=True)
+    customer = fields.Many2one('res.partner', string="Customer")
 
-    def name_get(self):
-        result = []
-        for record in self:
-            result.append((record.id, '%s' % record.license_plate))
-        return result
+    # def name_get(self):
+    #     result = []
+    #     for record in self:
+    #         result.append((record.id, '%s' % record.license_plate))
+    #     return result
 
     def _repair_count(self):
         if self.repair_ids:
