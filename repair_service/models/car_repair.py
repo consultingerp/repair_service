@@ -63,7 +63,7 @@ class CarRepair(models.Model):
     mobile = fields.Char(string='Mobile')
     contact_no = fields.Char(string='Contact No')
     description = fields.Text('Note')
-    multi_images = fields.Many2many('repair.image', string='Images')
+    # multi_images = fields.Many2many('repair.image', string='Images')
     multi_image = fields.Many2many(comodel_name="ir.attachment", relation="m2m_ir_attachment_relation",
                                    column1="m2m_id", column2="attachment_id", string="Images")
     image_name = fields.Char('Image Name')
